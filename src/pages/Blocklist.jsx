@@ -8,7 +8,7 @@ import {
     ChevronUp,
     FileText,
 } from 'lucide-react';
-import { getBlocklist } from '../api/client';
+import { getBlocklist } from '../ai/analyze';
 import './Blocklist.css';
 
 const categoryColors = {
@@ -29,20 +29,16 @@ export default function Blocklist() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true);
-        getBlocklist()
-            .then((data) => {
-                const items = (data.items || []).map((item, i) => ({
-                    id: i + 1,
-                    ...item,
-                }));
-                setBlocklistData(items);
-                setLoading(false);
-            })
-            .catch(() => {
-                setBlocklistData([]);
-                setLoading(false);
-            });
+        try {
+            const items = getBlocklist().map((item, i) => ({
+                id: i + 1,
+                ...item,
+            }));
+            setBlocklistData(items);
+        } catch (e) {
+            setBlocklistData([]);
+        }
+        setLoading(false);
     }, []);
 
     const handleSort = (field) => {

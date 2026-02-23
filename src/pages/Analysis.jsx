@@ -12,7 +12,7 @@ import {
     ChevronRight,
 } from 'lucide-react';
 import RiskGauge from '../components/RiskGauge';
-import { analyzeUrl } from '../api/client';
+import { analyzeWebsite as analyzeUrl } from '../ai/analyze';
 import './Analysis.css';
 
 const categoryColors = {
@@ -114,7 +114,7 @@ export default function Analysis() {
                 <div>
                     <h1 className="page-title">Analysis Result</h1>
                     <p className="page-subtitle">
-                        <Clock size={14} /> Scanned in {data.scan_duration} — {new Date(data.scanned_at).toLocaleString()}
+                        <Clock size={14} /> Scanned in {data.scan_time}s — {new Date(data.analyzed_at).toLocaleString()}
                         {data.cached && <span className="badge badge-cyan" style={{ marginLeft: 8, fontSize: 10 }}>CACHED</span>}
                     </p>
                 </div>
@@ -170,7 +170,7 @@ export default function Analysis() {
             {/* URL analyzed */}
             <div className="url-bar glass-card animate-in animate-in-delay-2">
                 <ExternalLink size={16} className="url-icon" />
-                <span className="url-text">{data.domain}</span>
+                <span className="url-text">{data.url}</span>
                 <span className={`badge ${riskBadgeClass}`}>{riskLabel}</span>
                 {data.cluster_id && (
                     <span className="badge badge-violet" style={{ marginLeft: 8 }}>{data.cluster_id}</span>
@@ -224,7 +224,11 @@ export default function Analysis() {
                 <div className="markers-grid">
                     {markerSections.map((section) => {
                         const Icon = section.icon;
-                        const items = data.markers[section.key] || [];
+                        const rawData = data.markers?.[section.key];
+                        // Convert object to array of {key, value} pairs
+                        const items = rawData ? Object.entries(rawData)
+                            .filter(([, v]) => v != null && v !== false)
+                            .map(([k, v]) => ({ key: k, value: typeof v === 'object' ? JSON.stringify(v) : String(v) })) : [];
                         if (items.length === 0) return null;
                         return (
                             <div key={section.key} className="marker-card glass-card">

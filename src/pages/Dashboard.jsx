@@ -10,7 +10,7 @@ import {
     Zap,
     Globe,
 } from 'lucide-react';
-import { getStats, getBlocklist } from '../api/client';
+import { getStats, getBlocklist } from '../ai/analyze';
 import './Dashboard.css';
 
 const categoryColors = {
@@ -31,33 +31,30 @@ export default function Dashboard() {
 
     // Load stats and threat feed from API
     useEffect(() => {
-        getStats()
-            .then(setStats)
-            .catch(() => {
-                // Fallback stats if server isn't running
-                setStats({ scannedToday: 14827, clustersFound: 342, threatsBlocked: 8291, activeMonitors: 1563 });
-            });
+        try {
+            const s = getStats();
+            setStats(s);
+        } catch (e) {
+            setStats({ scannedToday: 14827, clustersFound: 342, threatsBlocked: 8291, activeMonitors: 1563 });
+        }
 
-        getBlocklist()
-            .then((data) => {
-                const items = (data.items || []).slice(0, 10).map((item, i) => ({
-                    id: i + 1,
-                    time: `${(i + 1) * 3} min ago`,
-                    domain: item.domain,
-                    category: item.category,
-                    risk: item.risk,
-                    action: item.status === 'Blocked' ? 'Auto-blocked' : item.status === 'Under Review' ? 'Under review' : 'Cluster detected',
-                }));
-                setThreatFeed(items);
-            })
-            .catch(() => {
-                // Fallback feed
-                setThreatFeed([
-                    { id: 1, time: '2 min ago', domain: 'lucky-spin-777.bet', category: 'Casino', risk: 92, action: 'Auto-blocked' },
-                    { id: 2, time: '5 min ago', domain: 'invest-gold-pro.xyz', category: 'Pyramid', risk: 87, action: 'Cluster detected' },
-                    { id: 3, time: '8 min ago', domain: 'secure-bank-verify.com', category: 'Phishing', risk: 95, action: 'Auto-blocked' },
-                ]);
-            });
+        try {
+            const items = getBlocklist().slice(0, 10).map((item, i) => ({
+                id: i + 1,
+                time: `${(i + 1) * 3} min ago`,
+                domain: item.domain,
+                category: item.category,
+                risk: item.risk,
+                action: item.status === 'Blocked' ? 'Auto-blocked' : item.status === 'Under Review' ? 'Under review' : 'Cluster detected',
+            }));
+            setThreatFeed(items);
+        } catch (e) {
+            setThreatFeed([
+                { id: 1, time: '2 min ago', domain: 'lucky-spin-777.bet', category: 'Casino', risk: 92, action: 'Auto-blocked' },
+                { id: 2, time: '5 min ago', domain: 'invest-gold-pro.xyz', category: 'Pyramid', risk: 87, action: 'Cluster detected' },
+                { id: 3, time: '8 min ago', domain: 'secure-bank-verify.com', category: 'Phishing', risk: 95, action: 'Auto-blocked' },
+            ]);
+        }
     }, []);
 
     const handleAnalyze = (e) => {

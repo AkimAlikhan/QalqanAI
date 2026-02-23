@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import { Info, X } from 'lucide-react';
-import { getCluster } from '../api/client';
+import { getCluster } from '../ai/analyze';
 import './Ecosystem.css';
 
 const nodeColors = {
@@ -35,15 +35,13 @@ export default function Ecosystem() {
     // Fetch graph data from API
     useEffect(() => {
         setLoading(true);
-        getCluster(urlParam || '')
-            .then((data) => {
-                setGraphData(data);
-                setLoading(false);
-            })
-            .catch(() => {
-                setGraphData({ nodes: [], edges: [] });
-                setLoading(false);
-            });
+        try {
+            const data = getCluster(urlParam || '');
+            setGraphData(data);
+        } catch (e) {
+            setGraphData({ nodes: [], edges: [] });
+        }
+        setLoading(false);
     }, [urlParam]);
 
     // Render D3 graph
