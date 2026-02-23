@@ -1,0 +1,253 @@
+.blocklist-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.export-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Filters */
+.filters-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.filter-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.filter-search input {
+    flex: 1;
+    font-size: 0.85rem;
+    padding: 4px 0;
+}
+
+.filter-search input::placeholder {
+    color: var(--text-muted);
+}
+
+.filter-search svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.filter-select {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.filter-select select {
+    appearance: none;
+    background: none;
+    border: none;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    padding-right: 16px;
+    cursor: pointer;
+}
+
+.filter-select svg {
+    color: var(--text-muted);
+}
+
+.select-arrow {
+    position: absolute;
+    right: 8px;
+    pointer-events: none;
+}
+
+.filter-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.filter-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Table */
+.table-container {
+    overflow-x: auto;
+    padding: 4px;
+}
+
+.blocklist-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.blocklist-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+}
+
+.blocklist-table th:hover {
+    color: var(--accent-cyan);
+}
+
+.blocklist-table th svg {
+    vertical-align: middle;
+    margin-left: 4px;
+    opacity: 0.4;
+}
+
+.blocklist-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+
+.blocklist-table tr {
+    transition: background var(--transition-fast);
+}
+
+.blocklist-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.td-domain {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.td-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.td-cluster {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.78rem;
+    color: var(--accent-cyan);
+}
+
+.td-markers {
+    text-align: center;
+    font-weight: 700;
+}
+
+.risk-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.risk-bar-sm {
+    width: 50px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.risk-bar-sm-fill {
+    height: 100%;
+    border-radius: 2px;
+}
+
+.risk-num {
+    font-weight: 700;
+    font-size: 0.82rem;
+    min-width: 24px;
+}
+
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.status-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.status-blocked {
+    color: var(--danger);
+}
+
+.status-under-review {
+    color: var(--warning);
+}
+
+.status-monitoring {
+    color: var(--accent-cyan);
+}
+
+/* Disclaimer */
+.disclaimer {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.disclaimer svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--accent-cyan);
+}
+
+@media (max-width: 900px) {
+    .blocklist-header {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .filters-bar {
+        flex-wrap: wrap;
+    }
+}
