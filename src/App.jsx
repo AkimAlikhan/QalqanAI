@@ -1,5 +1,7 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import Sidebar from './components/Sidebar';
+import Navbar from './components/Navbar';
+import MilkyWay from './components/MilkyWay';
+import Chat from './components/Chat';
 import Dashboard from './pages/Dashboard';
 import Analysis from './pages/Analysis';
 import Ecosystem from './pages/Ecosystem';
@@ -11,7 +13,8 @@ export default function App() {
   return (
     <HashRouter>
       <div className="app-layout">
-        <Sidebar />
+        <MilkyWay />
+        <Navbar />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<Dashboard />} />
@@ -21,6 +24,7 @@ export default function App() {
             <Route path="/blocklist" element={<Blocklist />} />
           </Routes>
         </main>
+        <Chat />
       </div>
     </HashRouter>
   );

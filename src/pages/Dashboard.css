@@ -1,43 +1,52 @@
+/* ===== DASHBOARD ===== */
 .dashboard {
-    max-width: 1200px;
+    padding: 0;
+    max-width: 100%;
 }
 
 /* Hero */
 .hero {
     text-align: center;
-    padding: 40px 0 32px;
+    padding: 100px 48px 60px;
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 .hero-badge {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    font-size: 0.72rem;
+    padding: 6px 16px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
 }
 
 .hero-title {
-    font-size: 3rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
+    font-family: var(--font-serif);
+    font-size: 3.8rem;
+    font-weight: 700;
     line-height: 1.1;
-    margin-bottom: 16px;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    color: var(--text-primary);
 }
 
 .hero-title-accent {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-style: italic;
+    color: var(--text-secondary);
 }
 
 .hero-subtitle {
-    color: var(--text-secondary);
     font-size: 1.05rem;
-    max-width: 600px;
-    margin: 0 auto 36px;
+    color: var(--text-secondary);
     line-height: 1.7;
+    max-width: 560px;
+    margin: 0 auto 40px;
 }
 
-/* Scan Form */
+/* Scan form */
 .scan-form {
-    max-width: 680px;
+    max-width: 600px;
     margin: 0 auto;
 }
 
@@ -45,39 +54,26 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: var(--bg-tertiary);
+    padding: 6px 8px 6px 20px;
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 6px 6px 6px 18px;
+    border-radius: var(--radius-full);
     transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
 .scan-input-wrapper:focus-within {
-    border-color: var(--accent-cyan);
-    box-shadow: 0 0 0 3px var(--accent-cyan-dim), 0 0 30px rgba(0, 240, 255, 0.08);
+    border-color: var(--text-primary);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .scan-input-wrapper.scanning {
-    border-color: var(--accent-cyan);
-    animation: pulse-glow 1.5s ease infinite;
-}
-
-.scan-input-wrapper.scanning::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, var(--accent-cyan-dim), transparent);
-    animation: shimmer 1.5s ease infinite;
+    opacity: 0.7;
 }
 
 .scan-icon {
     color: var(--text-muted);
-    flex-shrink: 0;
+    min-width: 20px;
 }
 
 .scan-input {
@@ -88,49 +84,39 @@
 }
 
 .scan-input::placeholder {
-    color: var(--text-muted);
+    color: var(--text-dim);
 }
 
 .scan-btn {
-    flex-shrink: 0;
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
+    padding: 10px 24px;
+    white-space: nowrap;
+    font-size: 0.82rem;
+    border-radius: var(--radius-full);
 }
 
-.scan-btn:disabled {
-    opacity: 0.7;
-    cursor: wait;
-}
-
+/* Scan progress */
 .scan-progress {
-    margin-top: 12px;
+    margin-top: 16px;
     height: 3px;
     background: var(--bg-tertiary);
-    border-radius: 3px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
 .scan-progress-bar {
     height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
-    border-radius: 3px;
-    animation: progress-fill 1.5s ease forwards;
+    background: var(--text-primary);
+    border-radius: 10px;
+    animation: scanFill 1.5s ease forwards;
 }
 
-@keyframes progress-fill {
+@keyframes scanFill {
+    from {
+        width: 0;
+    }
+
     to {
         width: 100%;
-    }
-}
-
-.spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
     }
 }
 
@@ -139,14 +125,16 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    margin-bottom: 32px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 48px 48px;
 }
 
 .stat-card {
+    padding: 24px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 20px;
+    gap: 16px;
 }
 
 .stat-icon {
@@ -156,30 +144,33 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
 }
 
 .stat-value {
-    font-size: 1.5rem;
-    font-weight: 800;
+    font-size: 1.6rem;
+    font-weight: 700;
     letter-spacing: -0.02em;
+    font-family: var(--font-serif);
 }
 
 .stat-label {
     font-size: 0.78rem;
     color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     font-weight: 500;
 }
 
 /* Threat Feed */
 .threat-feed-section {
-    margin-bottom: 40px;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 48px 60px;
 }
 
 .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     margin-bottom: 16px;
 }
 
@@ -190,27 +181,27 @@
 }
 
 .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 600;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.1rem;
-    font-weight: 700;
 }
 
 .pulse-icon {
-    color: var(--accent-cyan);
-    animation: pulse-icon 2s ease infinite;
+    animation: float 2s ease infinite;
 }
 
-@keyframes pulse-icon {
+@keyframes float {
 
     0%,
     100% {
-        opacity: 1;
+        transform: translateY(0);
     }
 
     50% {
-        opacity: 0.4;
+        transform: translateY(-3px);
     }
 }
 
@@ -218,75 +209,80 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 10px;
-    background: var(--danger-dim);
-    border: 1px solid rgba(255, 71, 87, 0.3);
-    border-radius: 100px;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    color: var(--danger);
-    letter-spacing: 0.1em;
+    color: var(--accent-green);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
 }
 
 .live-dot {
     width: 6px;
     height: 6px;
+    background: var(--accent-green);
     border-radius: 50%;
-    background: var(--danger);
-    animation: pulse-icon 1s ease infinite;
+    animation: livePulse 2s infinite;
+}
+
+@keyframes livePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
 }
 
 .threat-feed {
-    max-height: 360px;
-    overflow-y: auto;
-    padding: 4px;
+    max-height: 320px;
+    overflow: hidden;
+    padding: 8px;
 }
 
 .feed-item {
     display: grid;
-    grid-template-columns: 80px 1fr 90px 100px 110px;
+    grid-template-columns: 80px 1fr auto auto auto;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.85rem;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
     transition: background var(--transition-fast);
 }
 
 .feed-item:hover {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.feed-item:last-child {
-    border-bottom: none;
+    background: var(--bg-tertiary);
 }
 
 .feed-time {
-    color: var(--text-muted);
-    font-size: 0.78rem;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 500;
 }
 
 .feed-domain {
+    font-size: 0.88rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 600;
-    font-family: 'SF Mono', 'Fira Code', monospace;
-    font-size: 0.82rem;
+    font-family: monospace;
 }
 
 .feed-risk {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-weight: 700;
+    gap: 10px;
     font-size: 0.82rem;
+    font-weight: 600;
 }
 
 .risk-bar-mini {
-    width: 48px;
+    width: 60px;
     height: 4px;
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--bg-tertiary);
     border-radius: 2px;
     overflow: hidden;
 }
@@ -294,53 +290,62 @@
 .risk-bar-mini-fill {
     height: 100%;
     border-radius: 2px;
-    transition: width 0.5s ease;
 }
 
 .feed-action {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
+    font-weight: 500;
 }
 
 .feed-action.blocked {
     color: var(--danger);
-    font-weight: 600;
 }
 
 /* Footer */
 .dashboard-footer {
     text-align: center;
-    padding: 32px 0;
-    border-top: 1px solid var(--border-color);
+    padding: 40px 48px 80px;
+    max-width: var(--max-width);
+    margin: 0 auto;
 }
 
 .footer-tagline {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    font-style: italic;
     color: var(--text-muted);
-    font-size: 0.9rem;
 }
 
 .footer-tagline span {
-    color: var(--accent-cyan);
-    font-weight: 600;
+    color: var(--text-secondary);
 }
 
-@media (max-width: 900px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
+/* Responsive */
+@media (max-width: 768px) {
+    .hero {
+        padding: 60px 20px 40px;
     }
 
     .hero-title {
-        font-size: 2rem;
+        font-size: 2.4rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 0 16px 32px;
+    }
+
+    .threat-feed-section {
+        padding: 0 16px 40px;
     }
 
     .feed-item {
-        grid-template-columns: 1fr auto;
-        gap: 8px;
+        grid-template-columns: 1fr auto auto;
     }
 
     .feed-time,
-    .feed-risk,
-    .feed-action {
+    .feed-risk {
         display: none;
     }
 }

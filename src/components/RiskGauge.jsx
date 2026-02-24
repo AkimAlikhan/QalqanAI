@@ -32,7 +32,7 @@ export default function RiskGauge({ score = 0, size = 200 }) {
             // Track
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.strokeStyle = 'rgba(0,0,0,0.06)';
             ctx.lineWidth = 10;
             ctx.lineCap = 'round';
             ctx.stroke();
@@ -62,10 +62,10 @@ export default function RiskGauge({ score = 0, size = 200 }) {
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, startAngle, scoreAngle);
             ctx.strokeStyle = animatedScore.current >= 75
-                ? 'rgba(255, 71, 87, 0.3)'
+                ? 'rgba(239, 68, 68, 0.25)'
                 : animatedScore.current >= 50
-                    ? 'rgba(255, 165, 2, 0.3)'
-                    : 'rgba(46, 213, 115, 0.3)';
+                    ? 'rgba(249, 115, 22, 0.25)'
+                    : 'rgba(34, 197, 94, 0.25)';
             ctx.lineWidth = 20;
             ctx.lineCap = 'round';
             ctx.filter = 'blur(10px)';
@@ -73,14 +73,14 @@ export default function RiskGauge({ score = 0, size = 200 }) {
             ctx.filter = 'none';
 
             // Score text
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#111111';
             ctx.font = `800 ${size * 0.22}px Inter, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(Math.round(animatedScore.current), centerX, centerY - 8);
 
             // Label
-            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
             ctx.font = `500 ${size * 0.07}px Inter, sans-serif`;
             ctx.fillText('RISK SCORE', centerX, centerY + size * 0.15);
 
