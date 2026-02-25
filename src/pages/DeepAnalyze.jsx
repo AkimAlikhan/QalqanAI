@@ -14,6 +14,7 @@ import {
     Server,
 } from 'lucide-react';
 import { deepScan, generateVariants } from '../ai/typosquatEngine';
+import { useLang } from '../i18n/LanguageContext';
 import './DeepAnalyze.css';
 
 const RISK_COLOR = (risk) => {
@@ -51,6 +52,7 @@ export default function DeepAnalyze() {
     const [sortDir, setSortDir] = useState('desc');
     const [filterStrategy, setFilterStrategy] = useState('all');
     const abortRef = useRef(null);
+    const { t } = useLang();
 
     const handleScan = useCallback(async (e) => {
         e.preventDefault();
@@ -125,10 +127,10 @@ export default function DeepAnalyze() {
             {/* Header */}
             <header className="da-header animate-in">
                 <div>
-                    <h1 className="page-title">Deep Analyze</h1>
+                    <h1 className="page-title">{t('deepAnalyze.title')}</h1>
                     <p className="page-subtitle">
                         <Target size={14} />
-                        Typosquatting & homoglyph scanner — find malicious clones of any domain
+                        {t('deepAnalyze.subtitle')}
                     </p>
                 </div>
             </header>
@@ -141,18 +143,18 @@ export default function DeepAnalyze() {
                         <input
                             type="text"
                             className="da-input"
-                            placeholder="Enter domain to scan (e.g. google.com, paypal.com)"
+                            placeholder={t('deepAnalyze.placeholder')}
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             disabled={isScanning}
                         />
                         {isScanning ? (
                             <button type="button" className="da-stop-btn" onClick={handleStop}>
-                                <Activity size={16} className="spin" /> Stop
+                                <Activity size={16} className="spin" /> {t('deepAnalyze.stop')}
                             </button>
                         ) : (
                             <button type="submit" className="btn-primary da-scan-btn" disabled={!url.trim()}>
-                                <Zap size={16} /> Deep Scan
+                                <Zap size={16} /> {t('deepAnalyze.deepScan')}
                             </button>
                         )}
                     </div>
@@ -160,13 +162,13 @@ export default function DeepAnalyze() {
 
                 <div className="da-info-chips">
                     <span className="da-chip">
-                        <Search size={12} /> Checks up to 10,000 domain variants
+                        <Search size={12} /> {t('deepAnalyze.checksVariants')}
                     </span>
                     <span className="da-chip">
-                        <Shield size={12} /> Real DNS verification via Cloudflare
+                        <Shield size={12} /> {t('deepAnalyze.realDNS')}
                     </span>
                     <span className="da-chip">
-                        <Eye size={12} /> Homoglyphs, typos, TLD swaps & more
+                        <Eye size={12} /> {t('deepAnalyze.strategies')}
                     </span>
                 </div>
             </section>
@@ -178,10 +180,10 @@ export default function DeepAnalyze() {
                         <div className="da-progress-header">
                             <div className="da-progress-stats">
                                 <span className="da-progress-label">
-                                    {isScanning ? 'Scanning...' : 'Scan Complete'}
+                                    {isScanning ? t('deepAnalyze.scanning') : t('deepAnalyze.scanComplete')}
                                 </span>
                                 <span className="da-progress-count">
-                                    {progress.checked.toLocaleString()} / {progress.total.toLocaleString()} variants
+                                    {progress.checked.toLocaleString()} / {progress.total.toLocaleString()} {t('deepAnalyze.variants')}
                                 </span>
                             </div>
                             <span className="da-progress-pct">{pct}%</span>
@@ -198,22 +200,22 @@ export default function DeepAnalyze() {
                             <div className="da-summary-badge">
                                 <Globe size={14} />
                                 <span className="da-summary-value">{results.length}</span>
-                                <span className="da-summary-label">Found Alive</span>
+                                <span className="da-summary-label">{t('deepAnalyze.foundAlive')}</span>
                             </div>
                             <div className="da-summary-badge danger">
                                 <AlertTriangle size={14} />
                                 <span className="da-summary-value">{dangerCount}</span>
-                                <span className="da-summary-label">High Risk</span>
+                                <span className="da-summary-label">{t('deepAnalyze.highRisk')}</span>
                             </div>
                             <div className="da-summary-badge warning">
                                 <Shield size={14} />
                                 <span className="da-summary-value">{warningCount}</span>
-                                <span className="da-summary-label">Medium Risk</span>
+                                <span className="da-summary-label">{t('deepAnalyze.mediumRisk')}</span>
                             </div>
                             <div className="da-summary-badge safe">
                                 <Eye size={14} />
                                 <span className="da-summary-value">{results.length - dangerCount - warningCount}</span>
-                                <span className="da-summary-label">Low Risk</span>
+                                <span className="da-summary-label">{t('deepAnalyze.lowRisk')}</span>
                             </div>
                         </div>
                     </div>
@@ -226,7 +228,7 @@ export default function DeepAnalyze() {
                     <div className="da-results-header">
                         <h2 className="da-results-title">
                             <AlertTriangle size={20} />
-                            Found Domains ({filtered.length})
+                            {t('deepAnalyze.foundDomains')} ({filtered.length})
                         </h2>
                         <div className="da-results-filters">
                             <select
@@ -234,7 +236,7 @@ export default function DeepAnalyze() {
                                 value={filterStrategy}
                                 onChange={(e) => setFilterStrategy(e.target.value)}
                             >
-                                <option value="all">All Strategies</option>
+                                <option value="all">{t('deepAnalyze.allStrategies')}</option>
                                 {strategies.map(s => (
                                     <option key={s} value={s}>{s}</option>
                                 ))}
@@ -247,13 +249,13 @@ export default function DeepAnalyze() {
                             <thead>
                                 <tr>
                                     <th onClick={() => toggleSort('domain')}>
-                                        Domain {sortBy === 'domain' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                                        {t('deepAnalyze.domain')} {sortBy === 'domain' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
                                     </th>
                                     <th onClick={() => toggleSort('strategy')}>
-                                        Strategy {sortBy === 'strategy' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                                        {t('deepAnalyze.strategy')} {sortBy === 'strategy' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
                                     </th>
                                     <th onClick={() => toggleSort('risk')}>
-                                        Risk {sortBy === 'risk' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
+                                        {t('deepAnalyze.risk')} {sortBy === 'risk' && (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)}
                                     </th>
                                     <th>IP</th>
                                     <th></th>
@@ -312,8 +314,8 @@ export default function DeepAnalyze() {
             {hasScanned && !isScanning && results.length === 0 && (
                 <div className="da-empty animate-in">
                     <Shield size={48} />
-                    <h3>No clones found</h3>
-                    <p>None of the generated domain variants resolved to an active IP address. This domain appears clean.</p>
+                    <h3>{t('deepAnalyze.noClonesFound')}</h3>
+                    <p>{t('deepAnalyze.noClonesDesc')}</p>
                 </div>
             )}
         </div>

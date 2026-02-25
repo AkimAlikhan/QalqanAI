@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import * as d3 from 'd3';
 import { Info, X } from 'lucide-react';
 import { getCluster } from '../ai/analyze';
+import { useLang } from '../i18n/LanguageContext';
 import './Ecosystem.css';
 
 const nodeColors = {
@@ -14,15 +15,6 @@ const nodeColors = {
     contact: '#ff6b81',
 };
 
-const nodeTypeLabels = {
-    website: 'Website',
-    domain: 'IP / Domain',
-    tracker: 'Tracker ID',
-    certificate: 'TLS Certificate',
-    wallet: 'Crypto Wallet',
-    contact: 'Contact / Operator',
-};
-
 export default function Ecosystem() {
     const svgRef = useRef(null);
     const containerRef = useRef(null);
@@ -31,6 +23,7 @@ export default function Ecosystem() {
     const [loading, setLoading] = useState(true);
     const [searchParams] = useSearchParams();
     const urlParam = searchParams.get('url');
+    const { t } = useLang();
 
     // Fetch graph data from API
     useEffect(() => {
@@ -58,41 +51,38 @@ export default function Ecosystem() {
 
         const svg = d3.select(svgRef.current)
             .attr('width', width)
-            .attr('height', height);
+            .attr('height', height)
+            .attr('viewBox', [0, 0, width, height]);
 
         const g = svg.append('g');
 
         // Zoom
         const zoom = d3.zoom()
-            .scaleExtent([0.2, 4])
-            .on('zoom', (event) => { g.attr('transform', event.transform); });
+            .scaleExtent([0.2, 5])
+            .on('zoom', (event) => g.attr('transform', event.transform));
         svg.call(zoom);
+        svg.call(zoom.transform, d3.zoomIdentity.translate(width / 2, height / 2).scale(0.8));
 
-        // Build D3-friendly data (clone to avoid mutation issues)
         const nodes = graphData.nodes.map(n => ({ ...n }));
-        const edges = graphData.edges
-            .map(e => ({
-                source: e.source,
-                target: e.target,
-                label: e.label,
-            }))
-            .filter(e => nodes.some(n => n.id === e.source) && nodes.some(n => n.id === e.target));
+        const edges = graphData.edges.map(e => ({ ...e }));
 
         const simulation = d3.forceSimulation(nodes)
-            .force('link', d3.forceLink(edges).id(d => d.id).distance(140))
-            .force('charge', d3.forceManyBody().strength(-400))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('collision', d3.forceCollide().radius(35));
+            .force('link', d3.forceLink(edges).id(d => d.id).distance(120))
+            .force('charge', d3.forceManyBody().strength(-300))
+            .force('center', d3.forceCenter(0, 0))
+            .force('collision', d3.forceCollide().radius(40));
 
-        // Edges
-        const link = g.append('g').selectAll('line')
+        // Links
+        const link = g.append('g')
+            .selectAll('line')
             .data(edges)
             .join('line')
-            .attr('stroke', '#ffffff30')
+            .attr('stroke', '#ffffff15')
             .attr('stroke-width', 1.5);
 
-        // Edge labels
-        const linkLabel = g.append('g').selectAll('text')
+        // Link labels
+        const linkLabel = g.append('g')
+            .selectAll('text')
             .data(edges)
             .join('text')
             .text(d => d.label)
@@ -105,30 +95,36 @@ export default function Ecosystem() {
             .data(nodes)
             .join('g')
             .call(d3.drag()
-                .on('start', (event, d) => { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                .on('start', (event, d) => {
+                    if (!event.active) simulation.alphaTarget(0.3).restart();
+                    d.fx = d.x; d.fy = d.y;
+                })
                 .on('drag', (event, d) => { d.fx = event.x; d.fy = event.y; })
-                .on('end', (event, d) => { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+                .on('end', (event, d) => {
+                    if (!event.active) simulation.alphaTarget(0);
+                    d.fx = null; d.fy = null;
+                })
             )
             .on('click', (event, d) => {
                 event.stopPropagation();
                 setSelectedNode(d);
             });
 
-        // Node circles
+        // Glow circle
         node.append('circle')
-            .attr('r', d => d.type === 'website' ? 20 : 14)
+            .attr('r', d => d.type === 'website' ? 18 : 12)
             .attr('fill', d => `${nodeColors[d.type] || '#888'}20`)
             .attr('stroke', d => nodeColors[d.type] || '#888')
-            .attr('stroke-width', 2);
+            .attr('stroke-width', 1.5);
 
-        // Inner dot
+        // Color dot
         node.append('circle')
             .attr('r', d => d.type === 'website' ? 6 : 4)
             .attr('fill', d => nodeColors[d.type] || '#888');
 
-        // Labels
+        // Label
         node.append('text')
-            .text(d => d.label.length > 20 ? d.label.slice(0, 17) + '...' : d.label)
+            .text(d => d.label.length > 20 ? d.label.substring(0, 18) + '…' : d.label)
             .attr('dy', d => (d.type === 'website' ? 32 : 24))
             .attr('text-anchor', 'middle')
             .attr('font-size', 10)
@@ -148,13 +144,15 @@ export default function Ecosystem() {
         return () => simulation.stop();
     }, [graphData]);
 
+    const nodeTypeLabels = t('ecosystem.nodeLabels');
+
     if (loading) {
         return (
             <div className="ecosystem page-container">
-                <h1 className="page-title">Ecosystem Graph</h1>
+                <h1 className="page-title">{t('ecosystem.title')}</h1>
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Loading ecosystem data...</p>
+                    <p>Loading...</p>
                 </div>
             </div>
         );
@@ -168,10 +166,10 @@ export default function Ecosystem() {
         <div className="ecosystem page-container">
             <div className="eco-header animate-in">
                 <div>
-                    <h1 className="page-title">Ecosystem Graph</h1>
+                    <h1 className="page-title">{t('ecosystem.title')}</h1>
                     <p className="page-subtitle">
-                        Interactive visualization of infrastructure clusters and shared markers
-                        {urlParam && <span style={{ color: 'var(--accent-cyan)' }}> — filtered by {urlParam}</span>}
+                        {t('ecosystem.subtitle')}
+                        {urlParam && <span style={{ color: 'var(--accent-cyan)' }}> — {urlParam}</span>}
                     </p>
                 </div>
             </div>
@@ -181,10 +179,10 @@ export default function Ecosystem() {
 
                 {/* Cluster Summary */}
                 <div className="cluster-summary glass-card">
-                    <h4 className="summary-label">CLUSTER SUMMARY</h4>
-                    <div className="summary-stat"><strong>{websiteCount}</strong> Websites</div>
-                    <div className="summary-stat"><strong>{totalNodes}</strong> Total Nodes</div>
-                    <div className="summary-stat"><strong>{totalEdges}</strong> Connections</div>
+                    <h4 className="summary-label">{t('ecosystem.clusterSummary').toUpperCase()}</h4>
+                    <div className="summary-stat"><strong>{websiteCount}</strong> {t('ecosystem.websites')}</div>
+                    <div className="summary-stat"><strong>{totalNodes}</strong> {t('ecosystem.totalNodes')}</div>
+                    <div className="summary-stat"><strong>{totalEdges}</strong> {t('ecosystem.connections')}</div>
                     {graphData?.cluster_id && (
                         <div className="summary-stat cluster-id"><strong>{graphData.cluster_id}</strong> Cluster ID</div>
                     )}
@@ -192,7 +190,7 @@ export default function Ecosystem() {
 
                 {/* Legend */}
                 <div className="graph-legend glass-card">
-                    <h4 className="legend-title">NODE TYPES</h4>
+                    <h4 className="legend-title">{t('ecosystem.nodeTypes').toUpperCase()}</h4>
                     {Object.entries(nodeTypeLabels).map(([type, label]) => (
                         <div key={type} className="legend-item">
                             <span className="legend-dot" style={{ background: nodeColors[type] }}></span>
@@ -215,7 +213,7 @@ export default function Ecosystem() {
                         <h3 className="detail-label">{selectedNode.label}</h3>
                         {selectedNode.risk > 0 && (
                             <div className="detail-risk">
-                                Risk Score: <strong style={{ color: selectedNode.risk >= 80 ? 'var(--danger)' : selectedNode.risk >= 50 ? 'var(--warning)' : 'var(--success)' }}>
+                                {t('ecosystem.risk')} <strong style={{ color: selectedNode.risk >= 80 ? 'var(--danger)' : selectedNode.risk >= 50 ? 'var(--warning)' : 'var(--success)' }}>
                                     {selectedNode.risk}
                                 </strong>
                             </div>

@@ -13,6 +13,7 @@ import {
     ArrowRight,
 } from 'lucide-react';
 import { getStats, getBlocklist } from '../ai/analyze';
+import { useLang } from '../i18n/LanguageContext';
 import './Dashboard.css';
 
 const categoryColors = {
@@ -38,6 +39,7 @@ export default function Dashboard() {
     const [threatFeed, setThreatFeed] = useState([]);
     const navigate = useNavigate();
     const feedRef = useRef(null);
+    const { t } = useLang();
 
     // Load stats and threat feed from API
     useEffect(() => {
@@ -91,13 +93,15 @@ export default function Dashboard() {
     }, []);
 
     const statItems = [
-        { label: 'Scanned Today', value: (stats.scannedToday || 0).toLocaleString(), sub: '+18% vs yesterday', icon: Search, color: 'var(--accent-cyan)' },
-        { label: 'Suspicious', value: (stats.threatsBlocked || 0).toLocaleString(), sub: 'Tier A/B', icon: Shield, color: 'var(--danger)' },
-        { label: 'New Mirrors', value: (stats.clustersFound || 0).toLocaleString(), sub: '24 hours', icon: Copy, color: 'var(--accent-violet)' },
-        { label: 'Clusters', value: (stats.activeMonitors || 0).toLocaleString(), sub: 'Operator fingerprints', icon: TrendingUp, color: 'var(--success)' },
+        { label: t('dashboard.scannedToday'), value: (stats.scannedToday || 0).toLocaleString(), sub: t('dashboard.vsYesterday'), icon: Search, color: 'var(--accent-cyan)' },
+        { label: t('dashboard.suspicious'), value: (stats.threatsBlocked || 0).toLocaleString(), sub: t('dashboard.tierAB'), icon: Shield, color: 'var(--danger)' },
+        { label: t('dashboard.newMirrors'), value: (stats.clustersFound || 0).toLocaleString(), sub: t('dashboard.hours24'), icon: Copy, color: 'var(--accent-violet)' },
+        { label: t('dashboard.clusters'), value: (stats.activeMonitors || 0).toLocaleString(), sub: t('dashboard.operatorFingerprints'), icon: TrendingUp, color: 'var(--success)' },
     ];
 
     const displayFeed = threatFeed.length > 0 ? [...threatFeed, ...threatFeed] : [];
+    const breadcrumbs = t('dashboard.breadcrumb');
+    const categories = t('dashboard.categories');
 
     return (
         <div className="dashboard page-container">
@@ -105,21 +109,20 @@ export default function Dashboard() {
             <section className="hero-split animate-in">
                 <div className="hero-left">
                     <div className="hero-breadcrumb">
-                        <span>Detection</span>
+                        <span>{breadcrumbs[0]}</span>
                         <span className="breadcrumb-dot">•</span>
-                        <span>Graph</span>
+                        <span>{breadcrumbs[1]}</span>
                         <span className="breadcrumb-dot">•</span>
-                        <span>Blocklist</span>
+                        <span>{breadcrumbs[2]}</span>
                     </div>
 
                     <h1 className="hero-title">
-                        Find not one site —<br />
-                        <span className="hero-title-accent">find the whole network.</span>
+                        {t('dashboard.heroTitle')}<br />
+                        <span className="hero-title-accent">{t('dashboard.heroTitleAccent')}</span>
                     </h1>
 
                     <p className="hero-subtitle">
-                        QalqanAI shows risk, reasons, and the "digital DNA" of a resource.
-                        Infrastructure-level threat detection powered by graph mapping.
+                        {t('dashboard.heroSubtitle')}
                     </p>
 
                     <form className="scan-form" onSubmit={handleAnalyze}>
@@ -127,16 +130,16 @@ export default function Dashboard() {
                             <input
                                 type="text"
                                 className="scan-input"
-                                placeholder="Enter URL to analyze..."
+                                placeholder={t('dashboard.placeholder')}
                                 value={url}
                                 onChange={(e) => setUrl(e.target.value)}
                                 disabled={isScanning}
                             />
                             <button type="submit" className="btn-primary scan-btn" disabled={isScanning}>
                                 {isScanning ? (
-                                    <><Activity size={16} className="spin" /> Scanning...</>
+                                    <><Activity size={16} className="spin" /> {t('dashboard.scanning')}</>
                                 ) : (
-                                    <>Analyze</>
+                                    <>{t('dashboard.analyze')}</>
                                 )}
                             </button>
                         </div>
@@ -148,14 +151,14 @@ export default function Dashboard() {
                     </form>
 
                     <div className="category-chips">
-                        {['Casino', 'Pyramid', 'Scam / Fraud', 'Mirrors', 'Affiliate'].map(cat => (
+                        {categories.map(cat => (
                             <span key={cat} className="chip">{cat}</span>
                         ))}
                     </div>
 
                     <div className="hero-shortcuts">
                         <span className="shortcut-hint">
-                            Shortcuts: <kbd>/</kbd> — chat, <kbd>Ctrl</kbd> + <kbd>K</kbd> — to analysis
+                            {t('dashboard.shortcuts')} <kbd>/</kbd> {t('dashboard.shortcutChat')} <kbd>Ctrl</kbd> + <kbd>K</kbd> {t('dashboard.shortcutAnalysis')}
                         </span>
                     </div>
                 </div>
@@ -164,14 +167,14 @@ export default function Dashboard() {
                 <div className="hero-right">
                     <div className="feed-panel glass-card">
                         <div className="feed-panel-header">
-                            <h3>Threat Feed</h3>
+                            <h3>{t('dashboard.threatFeed')}</h3>
                             <span className="live-badge">
                                 <span className="live-dot"></span>
                                 LIVE
                             </span>
                         </div>
                         <p className="feed-panel-desc">
-                            Event stream: new mirrors, marker coincidences, cluster growth.
+                            {t('dashboard.feedDesc')}
                         </p>
                         <div className="feed-scroll" ref={feedRef}>
                             {displayFeed.map((item, i) => (
@@ -181,12 +184,12 @@ export default function Dashboard() {
                                     </div>
                                     <div className="event-content">
                                         <div className="event-title">
-                                            {item.action === 'Auto-blocked' ? 'New mirror detected' :
-                                                item.action === 'Cluster detected' ? 'Tracker reused' : 'Redirect anomaly'}
+                                            {item.action === 'Auto-blocked' ? t('dashboard.newMirror') :
+                                                item.action === 'Cluster detected' ? t('dashboard.trackerReused') : t('dashboard.redirectAnomaly')}
                                         </div>
                                         <div className="event-detail">
                                             <span className="event-domain">{item.domain}</span>
-                                            <span className="event-meta"> → risk {item.risk} • {item.category}</span>
+                                            <span className="event-meta"> → {t('dashboard.risk')} {item.risk} • {item.category}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -215,7 +218,7 @@ export default function Dashboard() {
             {/* Footer tagline */}
             <div className="dashboard-footer animate-in animate-in-delay-2">
                 <p className="footer-tagline">
-                    QalqanAI does not chase websites. <span>It maps the infrastructure behind them.</span>
+                    {t('dashboard.footerLine1')} <span>{t('dashboard.footerLine2')}</span>
                 </p>
             </div>
         </div>

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import RiskGauge from '../components/RiskGauge';
 import { analyzeWebsite as analyzeUrl } from '../ai/analyze';
+import { useLang } from '../i18n/LanguageContext';
 import './Analysis.css';
 
 const categoryColors = {
@@ -33,26 +34,28 @@ const categoryColors = {
 export default function Analysis() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { t } = useLang();
     const url = searchParams.get('url') || '1xbet.com';
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [statusText, setStatusText] = useState('Initializing scan...');
+    const [statusText, setStatusText] = useState('');
     const [expandedEvidence, setExpandedEvidence] = useState(new Set());
 
     useEffect(() => {
         setLoading(true);
         setError(null);
         setData(null);
+        setStatusText(t('analysis.initScan'));
 
         const statuses = [
-            'Checking domain existence (DNS)...',
-            'Resolving DNS records...',
-            'Probing TLS certificate...',
-            'Extracting infrastructure fingerprints...',
-            'Running heuristic analysis...',
-            'Evaluating risk rules...',
-            'Checking ecosystem graph...',
+            t('analysis.statusChecking'),
+            t('analysis.statusDNS'),
+            t('analysis.statusTLS'),
+            t('analysis.statusFingerprints'),
+            t('analysis.statusHeuristic'),
+            t('analysis.statusRisk'),
+            t('analysis.statusEcosystem'),
         ];
         let statusIdx = 0;
         const statusInterval = setInterval(() => {
@@ -90,7 +93,7 @@ export default function Analysis() {
             <div className="analysis page-container">
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Analyzing <strong>{url}</strong>...</p>
+                    <p>{t('analysis.analyzing')} <strong>{url}</strong>...</p>
                     <p className="loading-sub">{statusText}</p>
                 </div>
             </div>
@@ -102,10 +105,10 @@ export default function Analysis() {
             <div className="analysis page-container">
                 <div className="loading-state">
                     <AlertTriangle size={48} style={{ color: 'var(--danger)', marginBottom: '1rem' }} />
-                    <p>Analysis failed for <strong>{url}</strong></p>
+                    <p>{t('analysis.analysisFailed')} <strong>{url}</strong></p>
                     <p className="loading-sub">{error}</p>
                     <button className="btn-primary" style={{ marginTop: '1rem' }} onClick={() => navigate('/')}>
-                        ← Back to Dashboard
+                        {t('analysis.backToDashboard')}
                     </button>
                 </div>
             </div>
@@ -120,25 +123,24 @@ export default function Analysis() {
             <div className="analysis page-container">
                 <div className="analysis-header animate-in">
                     <div>
-                        <h1 className="page-title">Analysis Result</h1>
+                        <h1 className="page-title">{t('analysis.title')}</h1>
                         <p className="page-subtitle">
-                            <Clock size={14} /> Completed in {data.scan_time}s
+                            <Clock size={14} /> {t('analysis.completedIn')} {data.scan_time}s
                         </p>
                     </div>
                 </div>
                 <div className="not-found-card glass-card animate-in animate-in-delay-1">
                     <ShieldX size={64} style={{ color: 'var(--text-dim)', marginBottom: 16 }} />
-                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', marginBottom: 8 }}>Domain Not Found</h2>
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', marginBottom: 8 }}>{t('analysis.domainNotFound')}</h2>
                     <p className="url-text" style={{ fontSize: '1.1rem', marginBottom: 16 }}>{data.url}</p>
                     <div className="not-found-detail glass-card">
                         <Globe size={16} style={{ color: 'var(--text-muted)' }} />
                         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                            DNS lookup returned <strong>NXDOMAIN</strong> — this domain does not exist or has been taken down.
-                            It cannot be analyzed because there is no active web server responding at this address.
+                            {t('analysis.dnsLookup')} <strong>NXDOMAIN</strong> {t('analysis.nxdomain')}
                         </p>
                     </div>
                     <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => navigate('/')}>
-                        ← Analyze Another Domain
+                        {t('analysis.analyzeAnother')}
                     </button>
                 </div>
             </div>
@@ -146,27 +148,27 @@ export default function Analysis() {
     }
 
     const markerSections = [
-        { key: 'infrastructure', title: 'Infrastructure Markers', icon: Server, color: 'var(--accent-cyan)' },
-        { key: 'tracking', title: 'Tracking & Marketing', icon: BarChart3, color: 'var(--accent-violet)' },
-        { key: 'financial', title: 'Financial Indicators', icon: Wallet, color: 'var(--warning)' },
-        { key: 'contacts', title: 'Contact & Operator', icon: MessageCircle, color: '#ff6b81' },
+        { key: 'infrastructure', title: t('analysis.infrastructure'), icon: Server, color: 'var(--accent-cyan)' },
+        { key: 'tracking', title: t('analysis.tracking'), icon: BarChart3, color: 'var(--accent-violet)' },
+        { key: 'financial', title: t('analysis.financial'), icon: Wallet, color: 'var(--warning)' },
+        { key: 'contacts', title: t('analysis.contacts'), icon: MessageCircle, color: '#ff6b81' },
     ];
 
-    const riskLabel = data.risk_score >= 80 ? 'HIGH RISK' : data.risk_score >= 50 ? 'MEDIUM RISK' : 'LOW RISK';
+    const riskLabel = data.risk_score >= 80 ? t('analysis.highRisk') : data.risk_score >= 50 ? t('analysis.mediumRisk') : t('analysis.lowRisk');
     const riskBadgeClass = data.risk_score >= 80 ? 'badge-danger' : data.risk_score >= 50 ? 'badge-warning' : 'badge-cyan';
 
     return (
         <div className="analysis page-container">
             <div className="analysis-header animate-in">
                 <div>
-                    <h1 className="page-title">Analysis Result</h1>
+                    <h1 className="page-title">{t('analysis.title')}</h1>
                     <p className="page-subtitle">
-                        <Clock size={14} /> Scanned in {data.scan_time}s — {new Date(data.analyzed_at).toLocaleString()}
+                        <Clock size={14} /> {t('analysis.scannedIn')} {data.scan_time}s — {new Date(data.analyzed_at).toLocaleString()}
                         {data.cached && <span className="badge badge-cyan" style={{ marginLeft: 8, fontSize: 10 }}>CACHED</span>}
                     </p>
                 </div>
                 <button className="btn-primary" onClick={() => navigate(`/ecosystem?url=${encodeURIComponent(url)}`)}>
-                    <Network size={16} /> View Ecosystem
+                    <Network size={16} /> {t('analysis.viewEcosystem')}
                 </button>
             </div>
 
@@ -187,7 +189,7 @@ export default function Analysis() {
                     </div>
                     {data.confidence > 0 && (
                         <div className="confidence-label" style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: 12 }}>
-                            Confidence: {Math.round(data.confidence * 100)}%
+                            {t('analysis.confidence')} {Math.round(data.confidence * 100)}%
                         </div>
                     )}
                 </div>
@@ -195,12 +197,12 @@ export default function Analysis() {
                 <div className="reasons-card glass-card">
                     <h3 className="card-title">
                         <FileSearch size={18} style={{ marginRight: 8 }} />
-                        Why This Site Is {data.risk_score >= 50 ? 'Unsafe' : 'Analyzed'}
+                        {data.risk_score >= 50 ? t('analysis.whyUnsafe') : t('analysis.whyAnalyzed')}
                     </h3>
                     <div className="reasons-list">
                         {data.explanations.length === 0 ? (
                             <div className="reason-item" style={{ color: 'var(--success)' }}>
-                                ✓ No significant risk indicators detected
+                                {t('analysis.noRiskIndicators')}
                             </div>
                         ) : (
                             data.explanations.map((r, i) => (
@@ -216,7 +218,7 @@ export default function Analysis() {
                                     {expandedEvidence.has(i) && r.evidence && (
                                         <div className="evidence-panel">
                                             <div className="evidence-label">
-                                                <FileSearch size={12} /> Evidence Location
+                                                <FileSearch size={12} /> {t('analysis.evidenceLocation')}
                                             </div>
                                             <p className="evidence-text">{r.evidence}</p>
                                         </div>
@@ -241,17 +243,17 @@ export default function Analysis() {
             {/* Engine stats */}
             <div className="engine-stats animate-in animate-in-delay-2">
                 <div className="glass-card" style={{ padding: '12px 20px', fontSize: 13, color: 'var(--text-muted)' }}>
-                    Rules evaluated: <strong style={{ color: 'var(--text-primary)' }}>{data.rules_evaluated}</strong>
+                    {t('analysis.rulesEvaluated')} <strong style={{ color: 'var(--text-primary)' }}>{data.rules_evaluated}</strong>
                 </div>
                 <div className="glass-card" style={{ padding: '12px 20px', fontSize: 13, color: 'var(--text-muted)' }}>
-                    Rules triggered: <strong style={{ color: 'var(--text-primary)' }}>{data.rules_fired}</strong>
+                    {t('analysis.rulesTriggered')} <strong style={{ color: 'var(--text-primary)' }}>{data.rules_fired}</strong>
                 </div>
             </div>
 
             {/* Redirect Chain */}
             {data.redirect_chain && data.redirect_chain.length > 0 && (
                 <div className="redirect-section animate-in animate-in-delay-2">
-                    <h3 className="section-title-sm">Redirect Chain Timeline</h3>
+                    <h3 className="section-title-sm">{t('analysis.redirectChain')}</h3>
                     <div className="redirect-chain">
                         {data.redirect_chain.map((step, i) => (
                             <div key={i} className="redirect-step">
@@ -276,7 +278,7 @@ export default function Analysis() {
 
             {/* Digital Markers */}
             <div className="markers-section animate-in animate-in-delay-3">
-                <h3 className="section-title-sm">Extracted Digital Markers</h3>
+                <h3 className="section-title-sm">{t('analysis.extractedMarkers')}</h3>
                 <div className="markers-grid">
                     {markerSections.map((section) => {
                         const Icon = section.icon;
@@ -309,7 +311,7 @@ export default function Analysis() {
             {/* WHOIS Info */}
             {data.domain_analysis?.whois && (
                 <div className="whois-section animate-in animate-in-delay-3">
-                    <h3 className="section-title-sm"><User size={16} /> Registration & WHOIS</h3>
+                    <h3 className="section-title-sm"><User size={16} /> {t('analysis.registration')}</h3>
                     <div className="glass-card" style={{ padding: 20 }}>
                         <div className="markers-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
                             {Object.entries(data.domain_analysis.whois).map(([k, v]) => (

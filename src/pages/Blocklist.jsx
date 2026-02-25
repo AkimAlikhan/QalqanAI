@@ -9,6 +9,7 @@ import {
     FileText,
 } from 'lucide-react';
 import { getBlocklist } from '../ai/analyze';
+import { useLang } from '../i18n/LanguageContext';
 import './Blocklist.css';
 
 const categoryColors = {
@@ -27,6 +28,7 @@ export default function Blocklist() {
     const [sortDir, setSortDir] = useState('desc');
     const [blocklistData, setBlocklistData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { t } = useLang();
 
     useEffect(() => {
         try {
@@ -105,10 +107,10 @@ export default function Blocklist() {
     if (loading) {
         return (
             <div className="blocklist page-container">
-                <h1 className="page-title">Blocklist & Reports</h1>
+                <h1 className="page-title">{t('blocklist.title')}</h1>
                 <div className="loading-state">
                     <div className="loading-spinner"></div>
-                    <p>Loading blocklist data...</p>
+                    <p>{t('blocklist.loading')}</p>
                 </div>
             </div>
         );
@@ -118,17 +120,17 @@ export default function Blocklist() {
         <div className="blocklist page-container">
             <div className="blocklist-header animate-in">
                 <div>
-                    <h1 className="page-title">Blocklist & Reports</h1>
+                    <h1 className="page-title">{t('blocklist.title')}</h1>
                     <p className="page-subtitle">
-                        <FileText size={14} /> {filtered.length} of {blocklistData.length} entries — AI-classified threat database
+                        <FileText size={14} /> {filtered.length} {t('blocklist.of')} {blocklistData.length} {t('blocklist.subtitle')}
                     </p>
                 </div>
                 <div className="export-buttons">
                     <button className="btn-secondary" onClick={() => exportData('csv')}>
-                        <Download size={14} /> Export CSV
+                        <Download size={14} /> {t('blocklist.exportCSV')}
                     </button>
                     <button className="btn-secondary" onClick={() => exportData('json')}>
-                        <Download size={14} /> Export JSON
+                        <Download size={14} /> {t('blocklist.exportJSON')}
                     </button>
                 </div>
             </div>
@@ -139,7 +141,7 @@ export default function Blocklist() {
                     <Search size={16} />
                     <input
                         type="text"
-                        placeholder="Search domain or cluster..."
+                        placeholder={t('blocklist.searchPlaceholder')}
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
@@ -150,7 +152,7 @@ export default function Blocklist() {
                         {categories.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                     <select value={tierFilter} onChange={(e) => setTierFilter(e.target.value)}>
-                        <option value="All">All Tiers</option>
+                        <option value="All">{t('blocklist.allTiers')}</option>
                         <option value="A">Tier A</option>
                         <option value="B">Tier B</option>
                         <option value="C">Tier C</option>
@@ -163,14 +165,14 @@ export default function Blocklist() {
                 <table className="blocklist-table">
                     <thead>
                         <tr>
-                            <th onClick={() => handleSort('domain')}>Domain <SortIcon field="domain" /></th>
-                            <th onClick={() => handleSort('category')}>Category <SortIcon field="category" /></th>
-                            <th onClick={() => handleSort('risk')}>Risk <SortIcon field="risk" /></th>
-                            <th onClick={() => handleSort('tier')}>Tier <SortIcon field="tier" /></th>
-                            <th onClick={() => handleSort('status')}>Status <SortIcon field="status" /></th>
-                            <th onClick={() => handleSort('detectedDate')}>Detected <SortIcon field="detectedDate" /></th>
-                            <th>Cluster</th>
-                            <th>Markers</th>
+                            <th onClick={() => handleSort('domain')}>{t('blocklist.domain')} <SortIcon field="domain" /></th>
+                            <th onClick={() => handleSort('category')}>{t('blocklist.category')} <SortIcon field="category" /></th>
+                            <th onClick={() => handleSort('risk')}>{t('blocklist.risk')} <SortIcon field="risk" /></th>
+                            <th onClick={() => handleSort('tier')}>{t('blocklist.tier')} <SortIcon field="tier" /></th>
+                            <th onClick={() => handleSort('status')}>{t('blocklist.status')} <SortIcon field="status" /></th>
+                            <th onClick={() => handleSort('detectedDate')}>{t('blocklist.detected')} <SortIcon field="detectedDate" /></th>
+                            <th>{t('blocklist.cluster')}</th>
+                            <th>{t('blocklist.markers')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -224,8 +226,7 @@ export default function Blocklist() {
             <div className="blocklist-disclaimer animate-in animate-in-delay-3">
                 <AlertTriangle size={14} />
                 <p>
-                    All classifications are AI-generated and should be reviewed by a human analyst before enforcement.
-                    QalqanAI provides intelligence to support decisions — not replace them.
+                    {t('blocklist.disclaimer')}
                 </p>
             </div>
         </div>
