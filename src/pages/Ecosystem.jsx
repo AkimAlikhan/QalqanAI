@@ -77,8 +77,9 @@ export default function Ecosystem() {
             .selectAll('line')
             .data(edges)
             .join('line')
-            .attr('stroke', '#ffffff15')
-            .attr('stroke-width', 1.5);
+            .attr('stroke', d => d.label.includes('NLP') ? '#ffa50060' : '#ffffff15')
+            .attr('stroke-width', d => d.label.includes('NLP') ? 2 : 1.5)
+            .attr('stroke-dasharray', d => d.label.includes('NLP') ? '6,3' : 'none');
 
         // Link labels
         const linkLabel = g.append('g')
@@ -87,7 +88,7 @@ export default function Ecosystem() {
             .join('text')
             .text(d => d.label)
             .attr('font-size', 9)
-            .attr('fill', '#ffffff50')
+            .attr('fill', d => d.label.includes('NLP') ? '#ffa50088' : '#ffffff50')
             .attr('text-anchor', 'middle');
 
         // Nodes

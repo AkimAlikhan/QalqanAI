@@ -1,4 +1,5 @@
 // ===== GRAPH ENGINE (Browser-compatible singleton) =====
+import { generateEmbedding, buildFeatureText, cosineSimilarity, SIMILARITY_THRESHOLD } from './nlpEngine.js';
 
 class GraphEngine {
     constructor() {
@@ -8,6 +9,7 @@ class GraphEngine {
         this.analysisCache = new Map();
         this.clusters = new Map();
         this.clusterCounter = 42;
+        this.embeddings = new Map(); // domain → embedding vector (384-dim)
         this._seedKnownThreats();
     }
 
@@ -110,6 +112,24 @@ class GraphEngine {
         ['seed-w9', 'seed-w10', 'seed-w11', 'seed-w12'].forEach(id => this.clusters.set(id, 'CLS-0051'));
         // Scam/pyramid
         ['seed-w13', 'seed-w14', 'seed-w15', 'seed-w16', 'seed-w17'].forEach(id => this.clusters.set(id, 'CLS-0063'));
+
+        // Background: generate NLP embeddings for seed domains (non-blocking)
+        this._seedEmbeddings(seeds);
+    }
+
+    async _seedEmbeddings(seeds) {
+        // Wait for the transformer model to download and initialize
+        await new Promise(r => setTimeout(r, 5000));
+        let count = 0;
+        for (const s of seeds) {
+            const text = `${s.domain}. TLD ${s.domain.split('.').pop()}. category ${s.category}. ${s.risk >= 80 ? 'high risk dangerous malicious' : s.risk >= 50 ? 'medium risk suspicious' : 'low risk safe benign'}. server in ${s.country}.`;
+            const emb = await generateEmbedding(text);
+            if (emb) {
+                this.embeddings.set(s.domain, emb);
+                count++;
+            }
+        }
+        if (count > 0) console.log(`✓ NLP: seeded ${count} domain embeddings`);
     }
 
     addNode(id, label, type, risk = 0, metadata = {}) {
@@ -143,7 +163,40 @@ class GraphEngine {
         if (features.contacts.telegram) { const id = `tg-${features.contacts.telegram}`; if (!this.nodes.has(id)) this.addNode(id, features.contacts.telegram, 'contact', 0); this.addEdge(wId, id, 'same operator'); }
         this._detectCluster(wId);
         this._propagateRisk(wId, riskResult.riskScore);
+
+        // NLP: generate embedding and connect to similar domains (async)
+        this._nlpConnect(domain, wId, features, riskResult);
+
         return wId;
+    }
+
+    async _nlpConnect(domain, wId, features, riskResult) {
+        try {
+            const text = buildFeatureText(domain, features, riskResult);
+            const embedding = await generateEmbedding(text);
+            if (!embedding) return;
+
+            // Compare with all existing embeddings
+            for (const [otherDomain, otherEmb] of this.embeddings) {
+                if (otherDomain === domain) continue;
+                const sim = cosineSimilarity(embedding, otherEmb);
+                if (sim >= SIMILARITY_THRESHOLD) {
+                    const otherId = this.domainIndex.get(otherDomain);
+                    if (otherId) {
+                        this.addEdge(wId, otherId, `NLP similar (${Math.round(sim * 100)}%)`);
+                        // Auto-cluster highly similar domains
+                        if (sim >= 0.7 && this.clusters.has(otherId) && !this.clusters.has(wId)) {
+                            this.clusters.set(wId, this.clusters.get(otherId));
+                        }
+                    }
+                }
+            }
+
+            this.embeddings.set(domain, embedding);
+            console.log(`✓ NLP embedding stored for ${domain} (${this.embeddings.size} total, sim threshold: ${SIMILARITY_THRESHOLD})`);
+        } catch (err) {
+            console.warn('NLP connection failed for', domain, err);
+        }
     }
 
     getCluster(domain) {
