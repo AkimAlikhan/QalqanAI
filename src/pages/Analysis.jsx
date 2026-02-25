@@ -250,6 +250,75 @@ export default function Analysis() {
                 </div>
             </div>
 
+            {/* ML Model Classification */}
+            {data.ml_prediction && (
+                <div className="ml-prediction-card glass-card animate-in animate-in-delay-2" style={{ marginTop: 16, padding: 24 }}>
+                    <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                        <span style={{ fontSize: 18 }}>🧠</span>
+                        {t('analysis.mlTitle')}
+                    </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+                        <div style={{
+                            padding: '8px 16px',
+                            borderRadius: 8,
+                            fontWeight: 700,
+                            fontSize: 14,
+                            textTransform: 'uppercase',
+                            letterSpacing: 1,
+                            background: data.ml_prediction.prediction === 'benign' ? 'rgba(34,197,94,0.15)' :
+                                data.ml_prediction.prediction === 'phishing' ? 'rgba(255,71,87,0.15)' :
+                                    data.ml_prediction.prediction === 'malware' ? 'rgba(255,165,2,0.15)' :
+                                        'rgba(168,85,247,0.15)',
+                            color: data.ml_prediction.prediction === 'benign' ? '#22c55e' :
+                                data.ml_prediction.prediction === 'phishing' ? '#ff4757' :
+                                    data.ml_prediction.prediction === 'malware' ? '#ffa502' :
+                                        '#a855f7',
+                            border: `1px solid ${data.ml_prediction.prediction === 'benign' ? 'rgba(34,197,94,0.3)' :
+                                data.ml_prediction.prediction === 'phishing' ? 'rgba(255,71,87,0.3)' :
+                                    data.ml_prediction.prediction === 'malware' ? 'rgba(255,165,2,0.3)' :
+                                        'rgba(168,85,247,0.3)'}`,
+                        }}>
+                            {data.ml_prediction.prediction}
+                        </div>
+                        <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+                            {t('analysis.mlConfidence')} <strong style={{ color: 'var(--text-primary)' }}>{Math.round(data.ml_prediction.confidence * 100)}%</strong>
+                        </div>
+                    </div>
+                    <div style={{ display: 'grid', gap: 8 }}>
+                        {Object.entries(data.ml_prediction.probabilities)
+                            .sort(([, a], [, b]) => b - a)
+                            .map(([cls, prob]) => {
+                                const colors = {
+                                    benign: '#22c55e',
+                                    phishing: '#ff4757',
+                                    malware: '#ffa502',
+                                    defacement: '#a855f7',
+                                };
+                                return (
+                                    <div key={cls} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                                        <span style={{ width: 80, fontSize: 12, color: 'var(--text-muted)', textTransform: 'capitalize' }}>{cls}</span>
+                                        <div style={{ flex: 1, height: 8, borderRadius: 4, background: 'rgba(255,255,255,0.05)' }}>
+                                            <div style={{
+                                                width: `${prob * 100}%`,
+                                                height: '100%',
+                                                borderRadius: 4,
+                                                background: colors[cls] || '#888',
+                                                transition: 'width 0.6s ease',
+                                                minWidth: prob > 0 ? 4 : 0,
+                                            }} />
+                                        </div>
+                                        <span style={{ width: 44, fontSize: 12, color: 'var(--text-secondary)', textAlign: 'right' }}>{(prob * 100).toFixed(1)}%</span>
+                                    </div>
+                                );
+                            })
+                        }
+                    </div>
+                    <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                        {t('analysis.mlNote')}
+                    </div>
+                </div>
+            )}
+
             {/* Redirect Chain */}
             {data.redirect_chain && data.redirect_chain.length > 0 && (
                 <div className="redirect-section animate-in animate-in-delay-2">

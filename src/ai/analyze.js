@@ -7,6 +7,24 @@ import graphEngine from './graphEngine.js';
 import { legitimateDomains } from './knownThreats.js';
 
 const analysisCache = new Map();
+const ML_API_URL = 'http://localhost:5001/api/ml/predict';
+
+// Call the Python ML model server for secondary classification
+async function fetchMLPrediction(url) {
+    try {
+        const resp = await fetch(ML_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url }),
+            signal: AbortSignal.timeout(5000), // 5s timeout
+        });
+        if (!resp.ok) return null;
+        return await resp.json();
+    } catch {
+        // ML server not available — not critical
+        return null;
+    }
+}
 
 // Check if domain actually exists using DNS-over-HTTPS
 async function checkDomainExists(domain) {
@@ -85,10 +103,14 @@ export async function analyzeWebsite(url) {
     // Simulate progressive scanning delay for UX
     await new Promise(r => setTimeout(r, 300 + Math.random() * 700));
 
+    // Run ML prediction in parallel with feature extraction
+    const mlPromise = fetchMLPrediction(domain);
+
     const features = extractFeatures(url, dnsCheck.ip);
     const riskResult = scoreRisk(features);
     const graphId = graphEngine.insertAnalysis(domain, features, riskResult);
     const clusterId = graphEngine.getClusterId(domain);
+    const mlResult = await mlPromise;
     const scanTime = ((performance.now() - startTime) / 1000).toFixed(1);
 
     const result = {
@@ -130,6 +152,7 @@ export async function analyzeWebsite(url) {
         scan_time: parseFloat(scanTime),
         analyzed_at: new Date().toISOString(),
         cached: false,
+        ml_prediction: mlResult || null,
     };
 
     analysisCache.set(domain, result);
