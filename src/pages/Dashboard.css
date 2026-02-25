@@ -16,14 +16,14 @@
     margin-bottom: 24px;
     font-size: 0.72rem;
     padding: 6px 16px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     background: var(--bg-secondary);
     color: var(--text-secondary);
 }
 
 .hero-title {
     font-family: var(--font-serif);
-    font-size: 3.8rem;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.03em;
@@ -56,9 +56,9 @@
     gap: 8px;
     padding: 6px 8px 6px 20px;
     background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-full);
-    transition: all var(--transition-normal);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    transition: all 0.2s;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
@@ -81,6 +81,10 @@
     padding: 12px 8px;
     font-size: 0.95rem;
     color: var(--text-primary);
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
 }
 
 .scan-input::placeholder {
@@ -91,7 +95,17 @@
     padding: 10px 24px;
     white-space: nowrap;
     font-size: 0.82rem;
-    border-radius: var(--radius-full);
+    border-radius: 50px;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Scan progress */
@@ -125,7 +139,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
-    max-width: var(--max-width);
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 48px 48px;
 }
@@ -135,28 +149,33 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .stat-icon {
     width: 44px;
     height: 44px;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-tertiary);
-    color: var(--text-secondary);
+    flex-shrink: 0;
 }
 
 .stat-value {
     font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
 }
 
 .stat-label {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -165,7 +184,7 @@
 
 /* Threat Feed */
 .threat-feed-section {
-    max-width: var(--max-width);
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 48px 60px;
 }
@@ -193,25 +212,13 @@
     animation: float 2s ease infinite;
 }
 
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-3px);
-    }
-}
-
 .live-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
     font-size: 0.65rem;
     font-weight: 700;
-    color: var(--accent-green);
+    color: var(--success);
     text-transform: uppercase;
     letter-spacing: 0.12em;
 }
@@ -219,7 +226,7 @@
 .live-dot {
     width: 6px;
     height: 6px;
-    background: var(--accent-green);
+    background: var(--success);
     border-radius: 50%;
     animation: livePulse 2s infinite;
 }
@@ -248,8 +255,8 @@
     align-items: center;
     gap: 16px;
     padding: 14px 16px;
-    border-radius: var(--radius-md);
-    transition: background var(--transition-fast);
+    border-radius: 8px;
+    transition: background 0.15s;
 }
 
 .feed-item:hover {
@@ -263,12 +270,12 @@
 }
 
 .feed-domain {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     font-weight: 500;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: monospace;
+    font-family: var(--font-mono);
 }
 
 .feed-risk {
@@ -306,7 +313,7 @@
 .dashboard-footer {
     text-align: center;
     padding: 40px 48px 80px;
-    max-width: var(--max-width);
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -324,11 +331,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .hero {
-        padding: 60px 20px 40px;
-    }
-
-    .hero-title {
-        font-size: 2.4rem;
+        padding: 80px 20px 40px;
     }
 
     .stats-grid {

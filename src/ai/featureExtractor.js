@@ -52,7 +52,8 @@ function analyzeDomain(domain) {
     };
 }
 
-function generateIP(domain) {
+function generateIP(domain, realIP) {
+    if (realIP) return realIP;
     const h = deterministicHash(domain + 'ip', 8);
     const o1 = (parseInt(h.slice(0, 2), 16) % 223) + 1;
     const o2 = parseInt(h.slice(2, 4), 16) % 256;
@@ -142,12 +143,36 @@ function generateContactMarkers(domain) {
     const h = deterministicHash(domain + 'contact', 8);
     const hasTG = parseInt(h.slice(0, 2), 16) > 80;
     const hasWA = parseInt(h.slice(2, 4), 16) > 140;
-    const hasEmail = parseInt(h.slice(4, 6), 16) > 100;
+    const hasEmail = parseInt(h.slice(4, 6), 16) > 60;
+    const hasAbuse = parseInt(h.slice(6, 8), 16) > 100;
+
+    const baseName = domain.split('.')[0].replace(/-/g, '');
 
     return {
-        telegram: hasTG ? `@${domain.split('.')[0]}_support_bot` : null,
+        telegram: hasTG ? `@${baseName}_support` : null,
         whatsapp: hasWA ? `+7${parseInt(h.slice(2, 6), 16) % 9000000000 + 1000000000}` : null,
         email: hasEmail ? `support@${domain}` : null,
+        abuseEmail: hasAbuse ? `abuse@${domain}` : `abuse@${domain.split('.').slice(-2).join('.')}`,
+        registrarAbuse: `abuse@registrar-${deterministicHash(domain + 'reg', 4)}.com`,
+    };
+}
+
+function generateWhoisInfo(domain) {
+    const h = deterministicHash(domain + 'whois', 8);
+    const registrars = ['GoDaddy', 'Namecheap', 'Tucows', 'Gandi.net', 'Name.com', 'NameSilo', 'PDR Ltd', 'HostGator'];
+    const countries = ['US', 'RU', 'CN', 'TR', 'BR', 'NG', 'PH', 'IN', 'UA', 'CY', 'PA', 'SC'];
+
+    const idx = parseInt(h.slice(0, 2), 16);
+    const ageHash = parseInt(deterministicHash(domain + 'age', 4), 16);
+    const ageDays = ageHash % 3000;
+    const created = new Date(Date.now() - ageDays * 86400000);
+
+    return {
+        registrar: registrars[idx % registrars.length],
+        created: created.toISOString().split('T')[0],
+        registrantCountry: countries[parseInt(h.slice(2, 4), 16) % countries.length],
+        dnssec: parseInt(h.slice(4, 5), 16) > 8 ? 'unsigned' : 'signedDelegation',
+        privacy: parseInt(h.slice(5, 6), 16) > 6,
     };
 }
 
@@ -173,15 +198,16 @@ function generateRedirectChain(domain, domainAnalysis) {
     return chain;
 }
 
-export function extractFeatures(urlString) {
+export function extractFeatures(urlString, realIP) {
     const domain = parseDomain(urlString);
     const domainAnalysis = analyzeDomain(domain);
-    const ip = generateIP(domain);
+    const ip = generateIP(domain, realIP);
     const hosting = analyzeHosting(ip, domain);
     const tlsInfo = generateTLS(domain);
     const trackers = generateTrackers(domain);
     const financial = generateFinancialMarkers(domain);
     const contacts = generateContactMarkers(domain);
+    const whois = generateWhoisInfo(domain);
     const redirectChain = generateRedirectChain(domain, domainAnalysis);
 
     return {
@@ -194,6 +220,7 @@ export function extractFeatures(urlString) {
         trackers,
         financial,
         contacts,
+        whois,
         redirectChain,
         extractedAt: new Date().toISOString(),
     };

@@ -88,7 +88,7 @@ export default function Ecosystem() {
         const link = g.append('g').selectAll('line')
             .data(edges)
             .join('line')
-            .attr('stroke', '#ffffff15')
+            .attr('stroke', '#00000015')
             .attr('stroke-width', 1.5);
 
         // Edge labels
@@ -97,7 +97,7 @@ export default function Ecosystem() {
             .join('text')
             .text(d => d.label)
             .attr('font-size', 9)
-            .attr('fill', '#ffffff50')
+            .attr('fill', '#00000050')
             .attr('text-anchor', 'middle');
 
         // Nodes
@@ -132,7 +132,7 @@ export default function Ecosystem() {
             .attr('dy', d => (d.type === 'website' ? 32 : 24))
             .attr('text-anchor', 'middle')
             .attr('font-size', 10)
-            .attr('fill', '#ffffffcc')
+            .attr('fill', '#111111cc')
             .attr('font-family', 'monospace');
 
         simulation.on('tick', () => {

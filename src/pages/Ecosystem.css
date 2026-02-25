@@ -9,10 +9,10 @@
 
 .graph-container {
     position: relative;
-    height: calc(100vh - var(--navbar-height) - 180px);
+    height: calc(100vh - 64px - 180px);
     min-height: 500px;
     background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
 }
@@ -29,8 +29,8 @@
     left: 16px;
     padding: 16px 20px;
     background: rgba(255, 255, 255, 0.92);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    border-radius: 8px;
     min-width: 160px;
 }
 
@@ -57,7 +57,7 @@
 .cluster-id {
     margin-top: 6px;
     padding-top: 6px;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--border);
 }
 
 /* Legend */
@@ -67,8 +67,8 @@
     right: 16px;
     padding: 14px 18px;
     background: rgba(255, 255, 255, 0.92);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    border-radius: 8px;
 }
 
 .legend-title {
@@ -104,8 +104,8 @@
     padding: 18px 22px;
     max-width: 300px;
     background: rgba(255, 255, 255, 0.95);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    border-radius: 8px;
 }
 
 .detail-header {
@@ -133,7 +133,7 @@
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    transition: all var(--transition-fast);
+    transition: all 0.15s;
 }
 
 .detail-close:hover {

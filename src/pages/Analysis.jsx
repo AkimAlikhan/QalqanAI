@@ -10,6 +10,11 @@ import {
     Clock,
     Network,
     ChevronRight,
+    ChevronDown,
+    Globe,
+    ShieldX,
+    FileSearch,
+    User,
 } from 'lucide-react';
 import RiskGauge from '../components/RiskGauge';
 import { analyzeWebsite as analyzeUrl } from '../ai/analyze';
@@ -21,24 +26,27 @@ const categoryColors = {
     Phishing: '#ff4757',
     Pyramid: '#a855f7',
     Unknown: '#888',
+    Safe: '#22c55e',
+    'Not Found': '#888',
 };
 
 export default function Analysis() {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
-    const url = searchParams.get('url') || 'lucky-spin-777.bet';
+    const url = searchParams.get('url') || '1xbet.com';
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusText, setStatusText] = useState('Initializing scan...');
+    const [expandedEvidence, setExpandedEvidence] = useState(new Set());
 
     useEffect(() => {
         setLoading(true);
         setError(null);
         setData(null);
 
-        // Show progressive status messages
         const statuses = [
+            'Checking domain existence (DNS)...',
             'Resolving DNS records...',
             'Probing TLS certificate...',
             'Extracting infrastructure fingerprints...',
@@ -69,6 +77,14 @@ export default function Analysis() {
         return () => clearInterval(statusInterval);
     }, [url]);
 
+    const toggleEvidence = (idx) => {
+        setExpandedEvidence(prev => {
+            const next = new Set(prev);
+            if (next.has(idx)) next.delete(idx); else next.add(idx);
+            return next;
+        });
+    };
+
     if (loading) {
         return (
             <div className="analysis page-container">
@@ -97,6 +113,37 @@ export default function Analysis() {
     }
 
     if (!data) return null;
+
+    // Domain not found state
+    if (data.domainExists === false) {
+        return (
+            <div className="analysis page-container">
+                <div className="analysis-header animate-in">
+                    <div>
+                        <h1 className="page-title">Analysis Result</h1>
+                        <p className="page-subtitle">
+                            <Clock size={14} /> Completed in {data.scan_time}s
+                        </p>
+                    </div>
+                </div>
+                <div className="not-found-card glass-card animate-in animate-in-delay-1">
+                    <ShieldX size={64} style={{ color: 'var(--text-dim)', marginBottom: 16 }} />
+                    <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem', marginBottom: 8 }}>Domain Not Found</h2>
+                    <p className="url-text" style={{ fontSize: '1.1rem', marginBottom: 16 }}>{data.url}</p>
+                    <div className="not-found-detail glass-card">
+                        <Globe size={16} style={{ color: 'var(--text-muted)' }} />
+                        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                            DNS lookup returned <strong>NXDOMAIN</strong> — this domain does not exist or has been taken down.
+                            It cannot be analyzed because there is no active web server responding at this address.
+                        </p>
+                    </div>
+                    <button className="btn-primary" style={{ marginTop: 24 }} onClick={() => navigate('/')}>
+                        ← Analyze Another Domain
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const markerSections = [
         { key: 'infrastructure', title: 'Infrastructure Markers', icon: Server, color: 'var(--accent-cyan)' },
@@ -146,7 +193,10 @@ export default function Analysis() {
                 </div>
 
                 <div className="reasons-card glass-card">
-                    <h3 className="card-title">Why This Site Is {data.risk_score >= 50 ? 'Unsafe' : 'Analyzed'}</h3>
+                    <h3 className="card-title">
+                        <FileSearch size={18} style={{ marginRight: 8 }} />
+                        Why This Site Is {data.risk_score >= 50 ? 'Unsafe' : 'Analyzed'}
+                    </h3>
                     <div className="reasons-list">
                         {data.explanations.length === 0 ? (
                             <div className="reason-item" style={{ color: 'var(--success)' }}>
@@ -154,12 +204,23 @@ export default function Analysis() {
                             </div>
                         ) : (
                             data.explanations.map((r, i) => (
-                                <div key={i} className="reason-item">
-                                    <div className="reason-weight">+{r.weight}</div>
-                                    <div className="reason-label">{r.label}</div>
-                                    <span className={`badge badge-${r.type === 'infrastructure' ? 'cyan' : r.type === 'tracking' ? 'violet' : r.type === 'financial' ? 'warning' : r.type === 'ecosystem' ? 'cyan' : 'danger'}`}>
-                                        {r.type}
-                                    </span>
+                                <div key={i} className="reason-item-wrapper">
+                                    <div className="reason-item" onClick={() => toggleEvidence(i)} style={{ cursor: 'pointer' }}>
+                                        <div className="reason-weight">+{r.weight}</div>
+                                        <div className="reason-label">{r.label}</div>
+                                        <span className={`badge badge-${r.type === 'infrastructure' ? 'cyan' : r.type === 'tracking' ? 'violet' : r.type === 'financial' ? 'warning' : r.type === 'ecosystem' ? 'cyan' : 'danger'}`}>
+                                            {r.type}
+                                        </span>
+                                        <ChevronDown size={14} className={`evidence-chevron ${expandedEvidence.has(i) ? 'rotated' : ''}`} />
+                                    </div>
+                                    {expandedEvidence.has(i) && r.evidence && (
+                                        <div className="evidence-panel">
+                                            <div className="evidence-label">
+                                                <FileSearch size={12} /> Evidence Location
+                                            </div>
+                                            <p className="evidence-text">{r.evidence}</p>
+                                        </div>
+                                    )}
                                 </div>
                             ))
                         )}
@@ -178,18 +239,13 @@ export default function Analysis() {
             </div>
 
             {/* Engine stats */}
-            <div className="engine-stats animate-in animate-in-delay-2" style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+            <div className="engine-stats animate-in animate-in-delay-2">
                 <div className="glass-card" style={{ padding: '12px 20px', fontSize: 13, color: 'var(--text-muted)' }}>
                     Rules evaluated: <strong style={{ color: 'var(--text-primary)' }}>{data.rules_evaluated}</strong>
                 </div>
                 <div className="glass-card" style={{ padding: '12px 20px', fontSize: 13, color: 'var(--text-muted)' }}>
                     Rules triggered: <strong style={{ color: 'var(--text-primary)' }}>{data.rules_fired}</strong>
                 </div>
-                {data.graph_boost > 0 && (
-                    <div className="glass-card" style={{ padding: '12px 20px', fontSize: 13, color: 'var(--accent-violet)' }}>
-                        Graph boost: <strong>+{data.graph_boost}</strong>
-                    </div>
-                )}
             </div>
 
             {/* Redirect Chain */}
@@ -225,7 +281,6 @@ export default function Analysis() {
                     {markerSections.map((section) => {
                         const Icon = section.icon;
                         const rawData = data.markers?.[section.key];
-                        // Convert object to array of {key, value} pairs
                         const items = rawData ? Object.entries(rawData)
                             .filter(([, v]) => v != null && v !== false)
                             .map(([k, v]) => ({ key: k, value: typeof v === 'object' ? JSON.stringify(v) : String(v) })) : [];
@@ -250,6 +305,23 @@ export default function Analysis() {
                     })}
                 </div>
             </div>
+
+            {/* WHOIS Info */}
+            {data.domain_analysis?.whois && (
+                <div className="whois-section animate-in animate-in-delay-3">
+                    <h3 className="section-title-sm"><User size={16} /> Registration & WHOIS</h3>
+                    <div className="glass-card" style={{ padding: 20 }}>
+                        <div className="markers-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
+                            {Object.entries(data.domain_analysis.whois).map(([k, v]) => (
+                                <div key={k} className="marker-item" style={{ padding: '8px 0' }}>
+                                    <span className="marker-key">{k}</span>
+                                    <span className="marker-value">{String(v)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

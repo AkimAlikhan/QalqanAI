@@ -1,0 +1,118 @@
+/* ===== Blog Page ===== */
+.blog {
+    padding-top: 1rem;
+}
+
+.blog-hero {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.blog-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.blog-card {
+    padding: 2rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.blog-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+
+.blog-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 1rem;
+}
+
+.blog-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.blog-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.blog-date {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.blog-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.blog-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--accent-cyan);
+    background: rgba(14, 165, 233, 0.08);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.blog-title {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    margin: 0 0 0.75rem;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.blog-excerpt {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 1rem;
+}
+
+.blog-changes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.blog-changes li {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+}
+
+.blog-changes li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-cyan);
+    font-weight: 700;
+}
