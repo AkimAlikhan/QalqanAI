@@ -88,7 +88,7 @@ export default function Ecosystem() {
         const link = g.append('g').selectAll('line')
             .data(edges)
             .join('line')
-            .attr('stroke', '#00000015')
+            .attr('stroke', '#ffffff30')
             .attr('stroke-width', 1.5);
 
         // Edge labels
