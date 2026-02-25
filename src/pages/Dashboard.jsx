@@ -9,6 +9,8 @@ import {
     TrendingUp,
     Zap,
     Globe,
+    Copy,
+    ArrowRight,
 } from 'lucide-react';
 import { getStats, getBlocklist } from '../ai/analyze';
 import './Dashboard.css';
@@ -19,6 +21,14 @@ const categoryColors = {
     Phishing: '#ff4757',
     Pyramid: '#a855f7',
     Unknown: '#888',
+};
+
+const categoryIcons = {
+    Casino: '🎰',
+    Scam: '⚠️',
+    Phishing: '🎣',
+    Pyramid: '🔺',
+    Unknown: '❓',
 };
 
 export default function Dashboard() {
@@ -81,133 +91,129 @@ export default function Dashboard() {
     }, []);
 
     const statItems = [
-        { label: 'Scanned Today', value: (stats.scannedToday || 0).toLocaleString(), icon: Search, color: 'var(--accent-cyan)' },
-        { label: 'Clusters Found', value: (stats.clustersFound || 0).toLocaleString(), icon: TrendingUp, color: 'var(--accent-violet)' },
-        { label: 'Threats Blocked', value: (stats.threatsBlocked || 0).toLocaleString(), icon: Shield, color: 'var(--danger)' },
-        { label: 'Active Monitors', value: (stats.activeMonitors || 0).toLocaleString(), icon: Eye, color: 'var(--success)' },
+        { label: 'Scanned Today', value: (stats.scannedToday || 0).toLocaleString(), sub: '+18% vs yesterday', icon: Search, color: 'var(--accent-cyan)' },
+        { label: 'Suspicious', value: (stats.threatsBlocked || 0).toLocaleString(), sub: 'Tier A/B', icon: Shield, color: 'var(--danger)' },
+        { label: 'New Mirrors', value: (stats.clustersFound || 0).toLocaleString(), sub: '24 hours', icon: Copy, color: 'var(--accent-violet)' },
+        { label: 'Clusters', value: (stats.activeMonitors || 0).toLocaleString(), sub: 'Operator fingerprints', icon: TrendingUp, color: 'var(--success)' },
     ];
 
     const displayFeed = threatFeed.length > 0 ? [...threatFeed, ...threatFeed] : [];
 
     return (
         <div className="dashboard page-container">
-            {/* Hero Section */}
-            <section className="hero animate-in">
-                <div className="hero-badge badge badge-cyan">
-                    <Zap size={12} /> AI-Powered Detection
-                </div>
-                <h1 className="hero-title">
-                    Detect Unsafe Websites
-                    <br />
-                    <span className="hero-title-accent">Before They Spread</span>
-                </h1>
-                <p className="hero-subtitle">
-                    Infrastructure-level threat detection powered by digital fingerprinting,
-                    behavioral analysis, and graph-based ecosystem mapping.
-                </p>
-
-                <form className="scan-form" onSubmit={handleAnalyze}>
-                    <div className={`scan-input-wrapper ${isScanning ? 'scanning' : ''}`}>
-                        <Globe size={20} className="scan-icon" />
-                        <input
-                            type="text"
-                            className="scan-input"
-                            placeholder="Enter website URL or domain to analyze..."
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            disabled={isScanning}
-                        />
-                        <button type="submit" className="btn-primary scan-btn" disabled={isScanning}>
-                            {isScanning ? (
-                                <>
-                                    <Activity size={16} className="spin" /> Scanning...
-                                </>
-                            ) : (
-                                <>
-                                    <Search size={16} /> Analyze Website
-                                </>
-                            )}
-                        </button>
+            {/* Hero Section — split layout */}
+            <section className="hero-split animate-in">
+                <div className="hero-left">
+                    <div className="hero-breadcrumb">
+                        <span>Detection</span>
+                        <span className="breadcrumb-dot">•</span>
+                        <span>Graph</span>
+                        <span className="breadcrumb-dot">•</span>
+                        <span>Blocklist</span>
                     </div>
-                    {isScanning && (
-                        <div className="scan-progress">
-                            <div className="scan-progress-bar"></div>
+
+                    <h1 className="hero-title">
+                        Find not one site —<br />
+                        <span className="hero-title-accent">find the whole network.</span>
+                    </h1>
+
+                    <p className="hero-subtitle">
+                        QalqanAI shows risk, reasons, and the "digital DNA" of a resource.
+                        Infrastructure-level threat detection powered by graph mapping.
+                    </p>
+
+                    <form className="scan-form" onSubmit={handleAnalyze}>
+                        <div className={`scan-input-wrapper ${isScanning ? 'scanning' : ''}`}>
+                            <input
+                                type="text"
+                                className="scan-input"
+                                placeholder="Enter URL to analyze..."
+                                value={url}
+                                onChange={(e) => setUrl(e.target.value)}
+                                disabled={isScanning}
+                            />
+                            <button type="submit" className="btn-primary scan-btn" disabled={isScanning}>
+                                {isScanning ? (
+                                    <><Activity size={16} className="spin" /> Scanning...</>
+                                ) : (
+                                    <>Analyze</>
+                                )}
+                            </button>
                         </div>
-                    )}
-                </form>
+                        {isScanning && (
+                            <div className="scan-progress">
+                                <div className="scan-progress-bar"></div>
+                            </div>
+                        )}
+                    </form>
+
+                    <div className="category-chips">
+                        {['Casino', 'Pyramid', 'Scam / Fraud', 'Mirrors', 'Affiliate'].map(cat => (
+                            <span key={cat} className="chip">{cat}</span>
+                        ))}
+                    </div>
+
+                    <div className="hero-shortcuts">
+                        <span className="shortcut-hint">
+                            Shortcuts: <kbd>/</kbd> — chat, <kbd>Ctrl</kbd> + <kbd>K</kbd> — to analysis
+                        </span>
+                    </div>
+                </div>
+
+                {/* Right: Threat Feed */}
+                <div className="hero-right">
+                    <div className="feed-panel glass-card">
+                        <div className="feed-panel-header">
+                            <h3>Threat Feed</h3>
+                            <span className="live-badge">
+                                <span className="live-dot"></span>
+                                LIVE
+                            </span>
+                        </div>
+                        <p className="feed-panel-desc">
+                            Event stream: new mirrors, marker coincidences, cluster growth.
+                        </p>
+                        <div className="feed-scroll" ref={feedRef}>
+                            {displayFeed.map((item, i) => (
+                                <div key={`${item.id}-${i}`} className="feed-event">
+                                    <div className="event-icon" style={{ color: categoryColors[item.category] || '#888' }}>
+                                        <AlertTriangle size={16} />
+                                    </div>
+                                    <div className="event-content">
+                                        <div className="event-title">
+                                            {item.action === 'Auto-blocked' ? 'New mirror detected' :
+                                                item.action === 'Cluster detected' ? 'Tracker reused' : 'Redirect anomaly'}
+                                        </div>
+                                        <div className="event-detail">
+                                            <span className="event-domain">{item.domain}</span>
+                                            <span className="event-meta"> → risk {item.risk} • {item.category}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            {/* Stats */}
+            {/* Stats Row */}
             <section className="stats-grid animate-in animate-in-delay-1">
                 {statItems.map((item) => {
                     const Icon = item.icon;
                     return (
                         <div key={item.label} className="stat-card glass-card">
-                            <div className="stat-icon" style={{ background: `${item.color}15`, color: item.color }}>
-                                <Icon size={20} />
-                            </div>
                             <div className="stat-content">
-                                <div className="stat-value">{item.value}</div>
                                 <div className="stat-label">{item.label}</div>
+                                <div className="stat-value">{item.value}</div>
+                                <div className="stat-sub">{item.sub}</div>
                             </div>
                         </div>
                     );
                 })}
             </section>
 
-            {/* Live Threat Feed */}
-            <section className="threat-feed-section animate-in animate-in-delay-2">
-                <div className="section-header">
-                    <div className="section-title-group">
-                        <h2 className="section-title">
-                            <Activity size={18} className="pulse-icon" />
-                            Live Threat Feed
-                        </h2>
-                        <span className="live-badge">
-                            <span className="live-dot"></span> LIVE
-                        </span>
-                    </div>
-                </div>
-                <div className="threat-feed glass-card" ref={feedRef}>
-                    {displayFeed.map((item, i) => (
-                        <div key={`${item.id}-${i}`} className="feed-item">
-                            <div className="feed-time">{item.time}</div>
-                            <div className="feed-domain">
-                                <AlertTriangle size={14} style={{ color: categoryColors[item.category] || '#888' }} />
-                                {item.domain}
-                            </div>
-                            <span
-                                className="badge"
-                                style={{
-                                    background: `${(categoryColors[item.category] || '#888')}20`,
-                                    color: categoryColors[item.category] || '#888',
-                                    border: `1px solid ${(categoryColors[item.category] || '#888')}40`,
-                                }}
-                            >
-                                {item.category}
-                            </span>
-                            <div className="feed-risk">
-                                <div className="risk-bar-mini">
-                                    <div
-                                        className="risk-bar-mini-fill"
-                                        style={{
-                                            width: `${item.risk}%`,
-                                            background: item.risk >= 85 ? 'var(--danger)' : 'var(--warning)',
-                                        }}
-                                    ></div>
-                                </div>
-                                <span>{item.risk}</span>
-                            </div>
-                            <span className={`feed-action ${item.action === 'Auto-blocked' ? 'blocked' : ''}`}>
-                                {item.action}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
             {/* Footer tagline */}
-            <div className="dashboard-footer animate-in animate-in-delay-3">
+            <div className="dashboard-footer animate-in animate-in-delay-2">
                 <p className="footer-tagline">
                     QalqanAI does not chase websites. <span>It maps the infrastructure behind them.</span>
                 </p>

@@ -1,4 +1,4 @@
-/* ===== BLOCKLIST ===== */
+/* ===== BLOCKLIST — Dark Theme ===== */
 
 .blocklist-header {
     display: flex;
@@ -8,7 +8,7 @@
 }
 
 .blocklist-header .page-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
 }
 
 .export-buttons {
@@ -38,6 +38,9 @@
     padding: 8px 0;
     font-size: 0.88rem;
     color: var(--text-primary);
+    background: transparent;
+    border: none;
+    outline: none;
 }
 
 .search-wrapper input::placeholder {
@@ -55,7 +58,7 @@
     padding: 8px 12px;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-size: 0.82rem;
     color: var(--text-primary);
     cursor: pointer;
@@ -96,12 +99,12 @@
 }
 
 .blocklist-table tbody tr:hover {
-    background: var(--bg-tertiary);
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .blocklist-table tbody td {
     padding: 14px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid var(--border-subtle);
     vertical-align: middle;
 }
 
@@ -109,7 +112,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 0.82rem;
     font-weight: 500;
 }
@@ -148,17 +151,17 @@
 }
 
 .tier-a {
-    background: rgba(239, 68, 68, 0.1);
+    background: rgba(239, 68, 68, 0.15);
     color: var(--danger);
 }
 
 .tier-b {
-    background: rgba(245, 158, 11, 0.1);
+    background: rgba(245, 158, 11, 0.15);
     color: var(--warning);
 }
 
 .tier-c {
-    background: rgba(34, 197, 94, 0.1);
+    background: rgba(34, 197, 94, 0.15);
     color: var(--success);
 }
 
@@ -186,7 +189,7 @@
 }
 
 .td-cluster {
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 0.78rem;
     color: var(--text-muted);
 }
@@ -204,7 +207,7 @@
     margin-top: 24px;
     padding: 16px 20px;
     background: var(--bg-tertiary);
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     font-size: 0.8rem;
     color: var(--text-muted);

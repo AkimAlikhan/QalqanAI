@@ -8,6 +8,7 @@ import Ecosystem from './pages/Ecosystem';
 import HowItWorks from './pages/HowItWorks';
 import Blocklist from './pages/Blocklist';
 import Contact from './pages/Contact';
+import DeepAnalyze from './pages/DeepAnalyze';
 import './App.css';
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/deep-analyze" element={<DeepAnalyze />} />
             <Route path="/ecosystem" element={<Ecosystem />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/blocklist" element={<Blocklist />} />

@@ -32,7 +32,7 @@ export default function RiskGauge({ score = 0, size = 200 }) {
             // Track
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-            ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
             ctx.lineWidth = 10;
             ctx.lineCap = 'round';
             ctx.stroke();
@@ -73,14 +73,14 @@ export default function RiskGauge({ score = 0, size = 200 }) {
             ctx.filter = 'none';
 
             // Score text
-            ctx.fillStyle = '#111111';
+            ctx.fillStyle = '#ffffff';
             ctx.font = `800 ${size * 0.22}px Inter, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(Math.round(animatedScore.current), centerX, centerY - 8);
 
             // Label
-            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
             ctx.font = `500 ${size * 0.07}px Inter, sans-serif`;
             ctx.fillText('RISK SCORE', centerX, centerY + size * 0.15);
 

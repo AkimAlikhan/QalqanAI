@@ -1,22 +1,23 @@
-/* ===== QalqanAI — Global Design System ===== */
+/* ===== QalqanAI — Dark Design System ===== */
 
 /* ===== FONTS ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Light Theme Palette */
-  --bg-primary: #fafafa;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f2f2f2;
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  /* Dark Theme Palette */
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --bg-card: rgba(22, 22, 22, 0.85);
+  --bg-card-hover: rgba(28, 28, 28, 0.95);
+  --bg-elevated: #1e1e1e;
 
-  --text-primary: #111111;
-  --text-secondary: #555555;
-  --text-muted: #999999;
-  --text-dim: #bbbbbb;
+  --text-primary: #f0f0f0;
+  --text-secondary: #a0a0a0;
+  --text-muted: #666666;
+  --text-dim: #444444;
 
-  --accent-primary: #111111;
+  --accent-primary: #ffffff;
   --accent-cyan: #0ea5e9;
   --accent-violet: #8b5cf6;
 
@@ -24,22 +25,20 @@
   --warning: #f59e0b;
   --success: #22c55e;
 
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.15);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.05);
 
   /* Typography */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-display: 'Space Grotesk', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
-  --radius: 10px;
-  --radius-sm: 6px;
+  --radius: 12px;
+  --radius-sm: 8px;
   --radius-lg: 16px;
 
-  /* Pixel accents */
-  --pixel-border: 2px solid rgba(0, 0, 0, 0.06);
-  --pixel-shadow: 2px 2px 0 rgba(0, 0, 0, 0.04);
+  --navbar-height: 64px;
 }
 
 /* ===== RESET & BASE ===== */
@@ -78,11 +77,11 @@ h6 {
 }
 
 .page-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: clamp(1.8rem, 4vw, 2.4rem);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
 }
 
 .page-subtitle {
@@ -108,41 +107,12 @@ h6 {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
 
 .glass-card:hover {
   border-color: var(--border-hover);
-}
-
-/* ===== PIXEL ACCENTS ===== */
-.pixel-border {
-  border: var(--pixel-border);
-  box-shadow: var(--pixel-shadow);
-  border-radius: 0 !important;
-}
-
-.pixel-corner::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  width: 8px;
-  height: 8px;
-  border-top: 2px solid var(--accent-cyan);
-  border-left: 2px solid var(--accent-cyan);
-}
-
-.pixel-corner::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
-  border-bottom: 2px solid var(--accent-cyan);
-  border-right: 2px solid var(--accent-cyan);
 }
 
 /* ===== BADGES ===== */
@@ -160,25 +130,25 @@ h6 {
 }
 
 .badge-danger {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
   color: var(--danger);
   border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 .badge-warning {
-  background: rgba(245, 158, 11, 0.1);
+  background: rgba(245, 158, 11, 0.12);
   color: var(--warning);
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
 .badge-cyan {
-  background: rgba(14, 165, 233, 0.1);
+  background: rgba(14, 165, 233, 0.12);
   color: var(--accent-cyan);
   border: 1px solid rgba(14, 165, 233, 0.25);
 }
 
 .badge-violet {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(139, 92, 246, 0.12);
   color: var(--accent-violet);
   border: 1px solid rgba(139, 92, 246, 0.25);
 }
@@ -190,7 +160,7 @@ h6 {
   gap: 8px;
   padding: 10px 22px;
   background: var(--accent-primary);
-  color: white;
+  color: #0a0a0a;
   border: none;
   border-radius: 8px;
   font-size: 0.82rem;
@@ -314,17 +284,17 @@ h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* ===== SELECTION ===== */
 ::selection {
-  background: rgba(14, 165, 233, 0.15);
+  background: rgba(14, 165, 233, 0.25);
   color: var(--text-primary);
 }
 
@@ -341,6 +311,17 @@ h6 {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Input reset */
+input,
+textarea,
+select,
+button {
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
 }
 
 /* ===== RESPONSIVE ===== */

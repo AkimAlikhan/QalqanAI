@@ -1,4 +1,4 @@
-/* ===== Contact Page ===== */
+/* ===== Contact Page — Dark Theme ===== */
 .contact {
     padding-top: 1rem;
 }
@@ -39,14 +39,14 @@
 
 .info-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .info-icon {
     width: 42px;
     height: 42px;
     border-radius: 12px;
-    background: rgba(14, 165, 233, 0.08);
+    background: rgba(14, 165, 233, 0.1);
     color: var(--accent-cyan);
     display: flex;
     align-items: center;
@@ -78,7 +78,7 @@
 }
 
 .team-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 0.9rem;
     margin: 0 0 1rem;
     display: flex;
@@ -137,7 +137,7 @@
 }
 
 .form-title {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     font-size: 1.3rem;
     margin: 0 0 1.5rem;
 }
@@ -173,8 +173,8 @@
     width: 100%;
     padding: 10px 14px;
     border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    background: var(--bg-tertiary);
     font-size: 0.85rem;
     color: var(--text-primary);
     font-family: var(--font-sans);
@@ -186,6 +186,11 @@
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-cyan);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-dim);
 }
 
 .form-group textarea {
@@ -213,7 +218,7 @@
 }
 
 .form-success h3 {
-    font-family: var(--font-serif);
+    font-family: var(--font-display);
     margin: 0;
 }
 

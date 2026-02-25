@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, Diamond } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -20,12 +20,14 @@ export default function Navbar() {
         <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
             <div className="navbar-inner">
                 <NavLink to="/" className="navbar-logo" onClick={closeMobile}>
-                    <span className="logo-icon">◈</span>
-                    <span className="logo-text">QalqanAI</span>
+                    <img src={`${import.meta.env.BASE_URL}team-logo.png`} alt="Team Logo" className="logo-team" />
+                    <span className="logo-divider">|</span>
+                    <img src={`${import.meta.env.BASE_URL}qalqan-logo.png`} alt="QalqanAI" className="logo-qalqan" />
                 </NavLink>
 
                 <div className={`navbar-links ${mobileOpen ? 'open' : ''}`}>
                     <NavLink to="/" className="nav-link" onClick={closeMobile}>Dashboard</NavLink>
+                    <NavLink to="/deep-analyze" className="nav-link" onClick={closeMobile}>Deep Analyze</NavLink>
                     <NavLink to="/ecosystem" className="nav-link" onClick={closeMobile}>Ecosystem</NavLink>
                     <NavLink to="/blocklist" className="nav-link" onClick={closeMobile}>Blocklist</NavLink>
                     <NavLink to="/how-it-works" className="nav-link" onClick={closeMobile}>How It Works</NavLink>

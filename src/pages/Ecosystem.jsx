@@ -97,7 +97,7 @@ export default function Ecosystem() {
             .join('text')
             .text(d => d.label)
             .attr('font-size', 9)
-            .attr('fill', '#00000050')
+            .attr('fill', '#ffffff50')
             .attr('text-anchor', 'middle');
 
         // Nodes
@@ -132,7 +132,7 @@ export default function Ecosystem() {
             .attr('dy', d => (d.type === 'website' ? 32 : 24))
             .attr('text-anchor', 'middle')
             .attr('font-size', 10)
-            .attr('fill', '#111111cc')
+            .attr('fill', '#ffffffcc')
             .attr('font-family', 'monospace');
 
         simulation.on('tick', () => {
