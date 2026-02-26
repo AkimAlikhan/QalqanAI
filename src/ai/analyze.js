@@ -6,6 +6,7 @@ import { scoreRisk } from './riskEngine.js';
 import graphEngine from './graphEngine.js';
 import { legitimateDomains } from './knownThreats.js';
 import { findClones } from './cloneDetector.js';
+import { analyzeContent } from './contentAnalyzer.js';
 
 const analysisCache = new Map();
 const ML_API_URL = 'http://localhost:5001/api/ml/predict';
@@ -104,28 +105,53 @@ export async function analyzeWebsite(url) {
     // Simulate progressive scanning delay for UX
     await new Promise(r => setTimeout(r, 300 + Math.random() * 700));
 
-    // Run ML prediction in parallel with feature extraction
+    // Run ML prediction AND content analysis in parallel with feature extraction
     const mlPromise = fetchMLPrediction(domain);
+    const contentPromise = analyzeContent(domain);
 
     const features = extractFeatures(url, dnsCheck.ip);
     const riskResult = scoreRisk(features);
     const graphId = graphEngine.insertAnalysis(domain, features, riskResult);
     const clusterId = graphEngine.getClusterId(domain);
-    const mlResult = await mlPromise;
+    const [mlResult, contentResult] = await Promise.all([mlPromise, contentPromise]);
+
+    // Merge content score into risk score
+    let finalScore = riskResult.riskScore;
+    let finalCategory = riskResult.category;
+    const allExplanations = [...riskResult.explanations];
+
+    if (contentResult && contentResult.fetched) {
+        finalScore = Math.min(finalScore + contentResult.contentScore, 100);
+        if (contentResult.contentCategory !== 'Unknown' && finalCategory === 'Unknown') {
+            finalCategory = contentResult.contentCategory;
+        }
+        // Add content findings to explanations
+        for (const finding of contentResult.findings) {
+            allExplanations.push({
+                label: finding.detail,
+                weight: finding.score,
+                type: 'content',
+                evidence: `Detected in live page content fetched from ${domain}`,
+            });
+        }
+    }
+
+    const finalTier = finalScore >= 80 ? 'A' : finalScore >= 60 ? 'B' : finalScore >= 40 ? 'C' : 'D';
+    const finalStatus = finalScore >= 80 ? 'High Risk' : finalScore >= 50 ? 'Medium Risk' : finalScore >= 20 ? 'Low Risk' : 'Safe';
     const scanTime = ((performance.now() - startTime) / 1000).toFixed(1);
 
     const result = {
         url: domain,
         domainExists: true,
-        risk_score: riskResult.riskScore,
-        category: riskResult.category,
+        risk_score: finalScore,
+        category: finalCategory,
         confidence: riskResult.confidence,
         probabilities: riskResult.probabilities,
-        status: riskResult.status,
-        tier: riskResult.tier,
-        explanations: riskResult.explanations,
-        rules_evaluated: riskResult.rulesEvaluated,
-        rules_fired: riskResult.rulesFired,
+        status: finalStatus,
+        tier: finalTier,
+        explanations: allExplanations,
+        rules_evaluated: riskResult.rulesEvaluated + (contentResult ? contentResult.findings.length : 0),
+        rules_fired: riskResult.rulesFired + (contentResult ? contentResult.findings.length : 0),
         markers: {
             infrastructure: {
                 ip: features.hosting.ip,
@@ -154,6 +180,7 @@ export async function analyzeWebsite(url) {
         analyzed_at: new Date().toISOString(),
         cached: false,
         ml_prediction: mlResult || null,
+        content_analysis: contentResult || null,
         clone_variants: [], // populated async below
     };
 

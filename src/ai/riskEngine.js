@@ -25,7 +25,7 @@ const rules = [
             for (const bad of knownMaliciousDomains) {
                 if (name.includes(bad)) {
                     return {
-                        score: 40,
+                        score: 20,
                         explanation: `Domain matches known malicious pattern: "${bad}"`,
                         type: 'intelligence', category: 'Known Threat',
                         evidence: `Found in domain name "${f.domain}": matches known malicious domain pattern "${bad}" from threat intelligence database (${knownMaliciousDomains.size} entries)`,
@@ -52,7 +52,7 @@ const rules = [
             const matches = gamblingKeywords.filter(kw => domain.includes(kw));
             if (matches.length > 0) {
                 return {
-                    score: Math.min(matches.length * 15, 40),
+                    score: Math.min(matches.length * 15, 20),
                     explanation: `Domain contains gambling keywords: ${matches.join(', ')}`, type: 'content', category: 'Casino',
                     evidence: `Found in domain name "${f.domain}": keywords [${matches.map(m => `"${m}" at position ${domain.indexOf(m)}`).join(', ')}]`,
                 };

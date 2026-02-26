@@ -40,6 +40,20 @@ export const gamblingKeywords = [
     // Mirrors / copies
     'mirror', 'zerkalo', 'zerkal', 'rabochee', 'vhod', 'vkhod',
     'official', 'oficialnyy', 'registration', 'registraciya',
+    // Sports betting
+    'sportsbet', 'sportbet', 'livescore', 'livebet', 'odds', 'tipster',
+    'handicap', 'accumulator', 'parlay', 'bookmaker', 'bookie',
+    // Esports / virtual
+    'csgo', 'dota', 'esport', 'cybersport', 'virtual',
+    // Scratchers / arcade
+    'scratch', 'scratchcard', 'arcade', 'fruit', 'cherry', 'sevens',
+    // Russian gambling terms
+    'stavka', 'stavki', 'kazino', 'igra', 'igrat', 'igry', 'dengi',
+    'vyigrysh', 'besplatno', 'avtomat', 'avtomaty',
+    // More common domain patterns
+    'joker', 'ace', 'wild', 'blazing', 'fire', 'hot', 'mega', 'super',
+    'power', 'nitro', 'turbo', 'max', 'bull', 'rush', 'flash',
+    'candy', 'sweet', 'pirate', 'pharaoh', 'cleopatra', 'zeus',
 ];
 
 export const phishingKeywords = [

@@ -330,6 +330,66 @@ export default function Analysis() {
                 </div>
             )}
 
+            {/* Live Content Analysis */}
+            {data.content_analysis && data.content_analysis.fetched && (
+                <div className="glass-card animate-in animate-in-delay-2" style={{ marginTop: 16, padding: 24 }}>
+                    <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                        <span style={{ fontSize: 18 }}>🌐</span>
+                        {t('analysis.contentTitle')}
+                    </h3>
+                    {data.content_analysis.title && (
+                        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 8 }}>
+                            <strong>Page Title:</strong> {data.content_analysis.title}
+                        </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+                        <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.15)', fontSize: 12 }}>
+                            Content Score: <strong style={{ color: data.content_analysis.contentScore >= 30 ? '#ff4757' : data.content_analysis.contentScore >= 15 ? '#ffa502' : '#2ed573' }}>+{data.content_analysis.contentScore}</strong>
+                        </div>
+                        <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', fontSize: 12 }}>
+                            Keywords Found: <strong>{data.content_analysis.totalKeywords}</strong>
+                        </div>
+                        <div style={{ padding: '6px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', fontSize: 12 }}>
+                            Body: <strong>{(data.content_analysis.bodyLength / 1000).toFixed(1)}K</strong> chars
+                        </div>
+                    </div>
+                    {/* Keyword breakdown */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8, marginBottom: 14 }}>
+                        {[
+                            { label: '🎰 Gambling', count: data.content_analysis.keywordHits.gambling.length, color: '#ff6b81' },
+                            { label: '🎣 Phishing', count: data.content_analysis.keywordHits.phishing.length, color: '#ff4757' },
+                            { label: '⚠️ Scam', count: data.content_analysis.keywordHits.scam.length, color: '#ffa502' },
+                            { label: '🔺 Pyramid', count: data.content_analysis.keywordHits.pyramid.length, color: '#a855f7' },
+                        ].filter(c => c.count > 0).map((cat, i) => (
+                            <div key={i} style={{
+                                padding: '8px 12px', borderRadius: 8,
+                                background: `${cat.color}10`, border: `1px solid ${cat.color}25`,
+                                fontSize: 12,
+                            }}>
+                                {cat.label}: <strong style={{ color: cat.color }}>{cat.count}</strong> hits
+                            </div>
+                        ))}
+                    </div>
+                    {/* Findings */}
+                    {data.content_analysis.findings.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                            {data.content_analysis.findings.map((f, i) => (
+                                <div key={i} style={{
+                                    fontSize: 12, padding: '8px 12px', borderRadius: 6,
+                                    background: 'rgba(255,255,255,0.03)', color: 'var(--text-secondary)',
+                                    borderLeft: `3px solid ${f.score >= 15 ? '#ff4757' : '#ffa502'}`,
+                                }}>
+                                    <span style={{ color: f.score >= 15 ? '#ff4757' : '#ffa502', fontWeight: 600 }}>+{f.score}</span> {f.detail}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                        {t('analysis.contentNote')}
+                    </div>
+                </div>
+            )}
+
             {/* Clone/Variant Domains */}
             {data.clone_variants && data.clone_variants.length > 0 && (
                 <div className="glass-card animate-in animate-in-delay-2" style={{ marginTop: 16, padding: 24 }}>
