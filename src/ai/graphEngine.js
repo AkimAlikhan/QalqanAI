@@ -185,7 +185,7 @@ class GraphEngine {
                     if (otherId) {
                         this.addEdge(wId, otherId, `NLP similar (${Math.round(sim * 100)}%)`);
                         // Auto-cluster highly similar domains
-                        if (sim >= 0.7 && this.clusters.has(otherId) && !this.clusters.has(wId)) {
+                        if (sim >= 0.85 && this.clusters.has(otherId) && !this.clusters.has(wId)) {
                             this.clusters.set(wId, this.clusters.get(otherId));
                         }
                     }

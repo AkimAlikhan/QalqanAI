@@ -5,6 +5,7 @@ import { extractFeatures } from './featureExtractor.js';
 import { scoreRisk } from './riskEngine.js';
 import graphEngine from './graphEngine.js';
 import { legitimateDomains } from './knownThreats.js';
+import { findClones } from './cloneDetector.js';
 
 const analysisCache = new Map();
 const ML_API_URL = 'http://localhost:5001/api/ml/predict';
@@ -153,9 +154,41 @@ export async function analyzeWebsite(url) {
         analyzed_at: new Date().toISOString(),
         cached: false,
         ml_prediction: mlResult || null,
+        clone_variants: [], // populated async below
     };
 
     analysisCache.set(domain, result);
+
+    // Clone detection: find similar domains and add them to graph (async, non-blocking UI)
+    findClones(domain, 4).then(clones => {
+        const cloneResults = [];
+        for (const clone of clones) {
+            // Run lightweight analysis on each clone
+            const cloneFeatures = extractFeatures(clone.domain, clone.ip);
+            const cloneRisk = scoreRisk(cloneFeatures);
+            const cloneGraphId = graphEngine.insertAnalysis(clone.domain, cloneFeatures, cloneRisk);
+
+            // Link clone to original domain in graph
+            if (graphId && cloneGraphId) {
+                graphEngine.addEdge(graphId, cloneGraphId, 'clone/variant');
+            }
+
+            cloneResults.push({
+                domain: clone.domain,
+                ip: clone.ip,
+                risk_score: cloneRisk.riskScore,
+                category: cloneRisk.category,
+                graph_id: cloneGraphId,
+            });
+        }
+        result.clone_variants = cloneResults;
+        // Update cache with clone data
+        analysisCache.set(domain, result);
+        console.log(`✓ Clone scan: ${cloneResults.length} live variants added to graph for ${domain}`);
+    }).catch(err => {
+        console.warn('Clone detection failed:', err);
+    });
+
     return result;
 }
 

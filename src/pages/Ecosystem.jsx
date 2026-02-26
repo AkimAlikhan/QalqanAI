@@ -77,9 +77,17 @@ export default function Ecosystem() {
             .selectAll('line')
             .data(edges)
             .join('line')
-            .attr('stroke', d => d.label.includes('NLP') ? '#ffa50060' : '#ffffff15')
-            .attr('stroke-width', d => d.label.includes('NLP') ? 2 : 1.5)
-            .attr('stroke-dasharray', d => d.label.includes('NLP') ? '6,3' : 'none');
+            .attr('stroke', d => {
+                if (d.label.includes('clone')) return '#ff475760';
+                if (d.label.includes('NLP')) return '#ffa50060';
+                return '#ffffff15';
+            })
+            .attr('stroke-width', d => (d.label.includes('clone') || d.label.includes('NLP')) ? 2 : 1.5)
+            .attr('stroke-dasharray', d => {
+                if (d.label.includes('clone')) return '8,4';
+                if (d.label.includes('NLP')) return '6,3';
+                return 'none';
+            });
 
         // Link labels
         const linkLabel = g.append('g')
@@ -88,7 +96,11 @@ export default function Ecosystem() {
             .join('text')
             .text(d => d.label)
             .attr('font-size', 9)
-            .attr('fill', d => d.label.includes('NLP') ? '#ffa50088' : '#ffffff50')
+            .attr('fill', d => {
+                if (d.label.includes('clone')) return '#ff475788';
+                if (d.label.includes('NLP')) return '#ffa50088';
+                return '#ffffff50';
+            })
             .attr('text-anchor', 'middle');
 
         // Nodes

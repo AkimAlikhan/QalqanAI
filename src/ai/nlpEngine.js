@@ -132,7 +132,7 @@ export function cosineSimilarity(a, b) {
 }
 
 // Similarity threshold for creating graph edges
-export const SIMILARITY_THRESHOLD = 0.55;
+export const SIMILARITY_THRESHOLD = 0.75;
 
 /**
  * Check if the NLP model is loaded and ready.

@@ -70,6 +70,17 @@ export default function Analysis() {
                 clearInterval(statusInterval);
                 setData(result);
                 setLoading(false);
+
+                // Poll for async clone variants (they load after analysis)
+                let pollCount = 0;
+                const clonePoll = setInterval(() => {
+                    pollCount++;
+                    if (result.clone_variants && result.clone_variants.length > 0) {
+                        setData({ ...result });
+                        clearInterval(clonePoll);
+                    }
+                    if (pollCount >= 10) clearInterval(clonePoll); // stop after 20s
+                }, 2000);
             })
             .catch((err) => {
                 clearInterval(statusInterval);
@@ -315,6 +326,66 @@ export default function Analysis() {
                     </div>
                     <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-dim)', fontStyle: 'italic' }}>
                         {t('analysis.mlNote')}
+                    </div>
+                </div>
+            )}
+
+            {/* Clone/Variant Domains */}
+            {data.clone_variants && data.clone_variants.length > 0 && (
+                <div className="glass-card animate-in animate-in-delay-2" style={{ marginTop: 16, padding: 24 }}>
+                    <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                        <span style={{ fontSize: 18 }}>🔍</span>
+                        {t('analysis.clonesTitle')}
+                    </h3>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 14 }}>
+                        {t('analysis.clonesDesc')}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        {data.clone_variants.map((clone, i) => {
+                            const riskColor = clone.risk_score >= 80 ? '#ff4757' : clone.risk_score >= 50 ? '#ffa502' : '#2ed573';
+                            return (
+                                <div key={i} style={{
+                                    display: 'flex', alignItems: 'center', gap: 12,
+                                    padding: '12px 16px', borderRadius: 10,
+                                    background: 'rgba(255,255,255,0.03)',
+                                    border: '1px solid rgba(255,255,255,0.06)',
+                                }}>
+                                    <div style={{
+                                        width: 10, height: 10, borderRadius: '50%',
+                                        background: riskColor, flexShrink: 0,
+                                        boxShadow: `0 0 8px ${riskColor}60`,
+                                    }} />
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--text-primary)' }}>
+                                            {clone.domain}
+                                        </div>
+                                        <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 2 }}>
+                                            IP: {clone.ip || 'unknown'} · {clone.category}
+                                        </div>
+                                    </div>
+                                    <div style={{
+                                        fontWeight: 700, fontSize: 16, color: riskColor,
+                                        minWidth: 40, textAlign: 'right',
+                                    }}>
+                                        {clone.risk_score}
+                                    </div>
+                                    <button
+                                        onClick={() => navigate(`/ecosystem?url=${clone.domain}`)}
+                                        style={{
+                                            background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.2)',
+                                            borderRadius: 6, padding: '4px 10px', cursor: 'pointer',
+                                            color: '#00f0ff', fontSize: 11, fontWeight: 500,
+                                        }}
+                                    >
+                                        <Network size={12} style={{ marginRight: 4 }} />
+                                        Graph
+                                    </button>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div style={{ marginTop: 12, fontSize: 11, color: 'var(--text-dim)', fontStyle: 'italic' }}>
+                        {t('analysis.clonesNote')}
                     </div>
                 </div>
             )}
