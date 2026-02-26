@@ -3,6 +3,7 @@
 import {
     gamblingKeywords, phishingKeywords, scamKeywords, pyramidKeywords,
     brandNames, legitimateDomains, knownBadASNs, knownBadHostingProviders,
+    knownMaliciousDomains,
 } from './knownThreats.js';
 
 const rules = [
@@ -11,6 +12,25 @@ const rules = [
         evaluate: (f) => {
             if (f.domainAnalysis.isLegitimate) {
                 return { score: -80, explanation: `${f.domain} is a verified legitimate domain`, type: 'infrastructure', evidence: `Domain "${f.domain}" found in verified legitimate domains whitelist (${legitimateDomains.size} entries)` };
+            }
+            return null;
+        },
+    },
+    {
+        name: 'known_malicious',
+        evaluate: (f) => {
+            if (f.domainAnalysis.isLegitimate) return null;
+            const domain = f.domain.toLowerCase();
+            const name = domain.split('.').slice(0, -1).join('.');
+            for (const bad of knownMaliciousDomains) {
+                if (name.includes(bad)) {
+                    return {
+                        score: 40,
+                        explanation: `Domain matches known malicious pattern: "${bad}"`,
+                        type: 'intelligence', category: 'Known Threat',
+                        evidence: `Found in domain name "${f.domain}": matches known malicious domain pattern "${bad}" from threat intelligence database (${knownMaliciousDomains.size} entries)`,
+                    };
+                }
             }
             return null;
         },
@@ -32,9 +52,8 @@ const rules = [
             const matches = gamblingKeywords.filter(kw => domain.includes(kw));
             if (matches.length > 0) {
                 return {
-                    score: Math.min(matches.length * 10, 30),
-                    explanation: `Domain contains gambling keywords: ${matches.join(', ')}`,
-                    type: 'content', category: 'Casino',
+                    score: Math.min(matches.length * 15, 40),
+                    explanation: `Domain contains gambling keywords: ${matches.join(', ')}`, type: 'content', category: 'Casino',
                     evidence: `Found in domain name "${f.domain}": keywords [${matches.map(m => `"${m}" at position ${domain.indexOf(m)}`).join(', ')}]`,
                 };
             }
@@ -49,9 +68,8 @@ const rules = [
             const matches = phishingKeywords.filter(kw => domain.includes(kw));
             if (matches.length > 0) {
                 return {
-                    score: Math.min(matches.length * 12, 35),
-                    explanation: `Domain contains phishing indicators: ${matches.join(', ')}`,
-                    type: 'content', category: 'Phishing',
+                    score: Math.min(matches.length * 15, 40),
+                    explanation: `Domain contains phishing indicators: ${matches.join(', ')}`, type: 'content', category: 'Phishing',
                     evidence: `Found in domain name "${f.domain}": phishing patterns [${matches.map(m => `"${m}" at position ${domain.indexOf(m)}`).join(', ')}]`,
                 };
             }
@@ -66,9 +84,8 @@ const rules = [
             const matches = scamKeywords.filter(kw => domain.includes(kw));
             if (matches.length > 0) {
                 return {
-                    score: Math.min(matches.length * 10, 30),
-                    explanation: `Domain contains scam-related terms: ${matches.join(', ')}`,
-                    type: 'content', category: 'Scam',
+                    score: Math.min(matches.length * 15, 40),
+                    explanation: `Domain contains scam-related terms: ${matches.join(', ')}`, type: 'content', category: 'Scam',
                     evidence: `Found in domain name "${f.domain}": scam indicators [${matches.map(m => `"${m}"`).join(', ')}]`,
                 };
             }
@@ -83,9 +100,8 @@ const rules = [
             const matches = pyramidKeywords.filter(kw => domain.includes(kw));
             if (matches.length > 0) {
                 return {
-                    score: Math.min(matches.length * 10, 25),
-                    explanation: `Domain contains investment/MLM patterns: ${matches.join(', ')}`,
-                    type: 'content', category: 'Pyramid',
+                    score: Math.min(matches.length * 15, 35),
+                    explanation: `Domain contains investment/MLM patterns: ${matches.join(', ')}`, type: 'content', category: 'Pyramid',
                     evidence: `Found in domain name "${f.domain}": MLM/pyramid patterns [${matches.map(m => `"${m}"`).join(', ')}]`,
                 };
             }
@@ -112,9 +128,10 @@ const rules = [
     {
         name: 'excessive_dashes',
         evaluate: (f) => {
-            if (f.domainAnalysis.dashCount >= 3) {
+            if (f.domainAnalysis.dashCount >= 1) {
+                const score = f.domainAnalysis.dashCount >= 3 ? 15 : f.domainAnalysis.dashCount >= 2 ? 10 : 5;
                 return {
-                    score: 10,
+                    score,
                     explanation: `Domain uses ${f.domainAnalysis.dashCount} dashes — common in generated malicious domains`,
                     type: 'infrastructure',
                     evidence: `Found in domain structure: "${f.domain}" contains ${f.domainAnalysis.dashCount} hyphen characters, typical of algorithmically-generated domains`,
@@ -126,9 +143,10 @@ const rules = [
     {
         name: 'excessive_numbers',
         evaluate: (f) => {
-            if (f.domainAnalysis.numberCount >= 3) {
+            if (f.domainAnalysis.numberCount >= 2) {
+                const score = f.domainAnalysis.numberCount >= 4 ? 15 : f.domainAnalysis.numberCount >= 3 ? 12 : 8;
                 return {
-                    score: 8,
+                    score,
                     explanation: `Domain contains ${f.domainAnalysis.numberCount} numeric characters — suspicious pattern`,
                     type: 'infrastructure',
                     evidence: `Found in domain name: "${f.domain}" has ${f.domainAnalysis.numberCount} digits — numeric sequences in domains correlate with auto-generated malicious sites`,
